@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>平衡科學玩具世界</title>
+<meta name="description" content="學思創客的雷切平衡玩具：老鷹平衡鳥、鵜鶘平衡鳥、太空站平衡玩具。3D 組裝圖、重心模擬與 AR 平衡挑戰，附雷切檔。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=Share+Tech+Mono&display=swap">
+<style>
+/* 版面概念：一張雷切夾板。木色底、雷射紅切線、雕刻線般的細框；每件玩具一張「零件卡」 */
+:root{
+  --bg:#f3ead9; --paper:#fbf6ec; --ink:#2b2118; --muted:#6f6253; --line:#d9c9ae;
+  --laser:#c8323b; --engrave:#3c5f8f; --wood:#b98a52;
+  --f-display:"LXGW WenKai TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"Share Tech Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1b1713; --paper:#241f19; --ink:#f0e7d8; --muted:#b3a593; --line:#3d342a;
+  --laser:#f0626a; --engrave:#8fb2e3; --wood:#d6a868; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1b1713; --paper:#241f19; --ink:#f0e7d8; --muted:#b3a593; --line:#3d342a;
+  --laser:#f0626a; --engrave:#8fb2e3; --wood:#d6a868; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 var(--f-body)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--laser);outline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{padding-block:44px 28px}
+.eyebrow{font:13px var(--f-mono);letter-spacing:.16em;color:var(--laser)}
+h1{font:700 clamp(36px,6vw,60px)/1.12 var(--f-display);margin:8px 0 12px;text-wrap:balance}
+h1 small{display:block;font:500 clamp(16px,2.2vw,20px)/1.4 var(--f-mono);letter-spacing:.2em;color:var(--muted);margin-top:6px}
+.lead{max-width:62ch;margin:0;color:var(--ink)}
+.cutline{height:0;border-top:1.5px dashed var(--laser);opacity:.7;margin:28px 0 0}
+h2{font:700 26px/1.3 var(--f-display);margin:0 0 6px;text-wrap:balance}
+section{padding-block:28px}
+.sec-note{color:var(--muted);margin:0 0 18px;max-width:62ch}
+.toys{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.toy{background:var(--paper);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.toy .shot{display:block;aspect-ratio:16/10;max-width:100%;width:100%;object-fit:cover;background:#1b2a33;border-bottom:1.5px solid var(--line)}
+.toy .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.toy h3{font:700 22px/1.3 var(--f-display);margin:0}
+.toy p{margin:0;color:var(--muted);font-size:15px}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0;font-size:14px}
+.specs dt{font:13px var(--f-mono);color:var(--engrave);letter-spacing:.06em;white-space:nowrap}
+.specs dd{margin:0;font-variant-numeric:tabular-nums}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+.btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:8px 16px;border:1.5px solid var(--ink)}
+.btn.go{background:var(--laser);border-color:var(--laser);color:#fff}
+.btn.file{border-style:dashed;border-color:var(--engrave);color:var(--engrave);font-weight:500;padding:6px 12px;font-size:14px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.note{background:var(--paper);border:1.5px dashed var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.note h3{font:700 19px var(--f-display);margin:0 0 6px}
+.note ul{margin:0;padding-left:1.2em}
+.note li{margin-bottom:4px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+footer{padding-block:28px 40px;color:var(--muted);font-size:14px;border-top:1.5px solid var(--line);margin-top:20px}
+footer .brand{font:700 18px var(--f-display);color:var(--ink)}
+footer .brand span{font:13px var(--f-mono);letter-spacing:.14em;color:var(--laser);margin-left:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">學思創客 XUESI MAKER · 雷切 STEAM</div>
+    <h1>平衡科學玩具世界<small>BALANCE TOYS</small></h1>
+    <p class="lead">一片 3 mm 夾板、一個支點，就能讓整隻鳥穩穩停在尖端上。每件玩具都有 3D 組裝圖和重心模擬：轉羽毛、餵魚、轉太陽能板，看重心怎麼移、玩具怎麼歪。數字全部依雷切零件的真實面積計算。</p>
+    <div class="cutline" aria-hidden="true"></div>
+  </header>
+
+  <section aria-labelledby="t-toys">
+    <h2 id="t-toys">三件平衡玩具</h2>
+    <p class="sec-note">由簡單到進階：老鷹適合國小親子，鵜鶘加入「餵魚調重心」，太空站則有機械手臂和可轉動的太陽能板，適合國中專題。</p>
+    <div class="toys">
+      <article class="toy">
+        <img class="shot" src="img/eagle-assembly.jpg" alt="老鷹平衡鳥停在支柱上的 3D 畫面" loading="lazy">
+        <div class="body">
+          <h3>老鷹平衡鳥</h3>
+          <p>鳥喙尖頂在支柱上，靠翅膀下的羽毛片角度找到平衡。</p>
+          <dl class="specs">
+            <dt>支點</dt><dd>鳥喙尖</dd>
+            <dt>重心</dt><dd>支點下方約 6.7 mm</dd>
+            <dt>調整</dt><dd>羽毛朝外略往前約 17° 時水平</dd>
+          </dl>
+          <div class="links">
+            <a class="btn go" href="eagle/assembly.html">8 步組裝圖</a>
+            <a class="btn" href="eagle/ar.html">AR 平衡挑戰</a>
+          </div>
+        </div>
+      </article>
+      <article class="toy">
+        <img class="shot" src="img/pelican-lab.jpg" alt="鵜鶘平衡鳥坐在木樁上，嘴尖掛著魚" loading="lazy">
+        <div class="body">
+          <h3>鵜鶘平衡鳥</h3>
+          <p>喉囊底的鈍尖點坐在木樁上；嘴尖掛魚，餵幾條魚就會抬頭或低頭。</p>
+          <dl class="specs">
+            <dt>支點</dt><dd>喉囊鈍尖點（R0.6）</dd>
+            <dt>重心</dt><dd>支點下方約 12 mm</dd>
+            <dt>調整</dt><dd>1 條魚水平，0 條抬頭、2 條低頭各約 6°</dd>
+          </dl>
+          <div class="links">
+            <a class="btn go" href="pelican/lab.html">平衡實驗室</a>
+            <a class="btn file" href="pelican/files/Pelican_v1.1_slot27_laser.svg" download>SVG</a>
+            <a class="btn file" href="pelican/files/Pelican_v1.1_slot27_laser.dxf" download>DXF</a>
+            <a class="btn file" href="pelican/files/Pelican_v1.1_slot27_cardboard_A3.pdf">A3 紙板原型</a>
+          </div>
+        </div>
+      </article>
+      <article class="toy">
+        <img class="shot" src="img/iss-lab.jpg" alt="國際太空站平衡玩具停在火箭支架上" loading="lazy">
+        <div class="body">
+          <h3>國際太空站</h3>
+          <p>觀測塔的鈍尖點頂在火箭圓頭上；轉太陽能板、移動機械手臂、讓太空船停靠，都會改變重心。</p>
+          <dl class="specs">
+            <dt>支點</dt><dd>交叉支點（尖點對圓頭）</dd>
+            <dt>重心</dt><dd>左右 12.6 mm、前後 15.2 mm</dd>
+            <dt>零件</dt><dd>53 片，板面 362 × 263 mm</dd>
+          </dl>
+          <div class="links">
+            <a class="btn go" href="iss/lab.html">平衡實驗室</a>
+            <a class="btn file" href="iss/files/ISS_v7_slot27_laser.svg" download>SVG</a>
+            <a class="btn file" href="iss/files/ISS_v7_slot27_laser.dxf" download>DXF</a>
+            <a class="btn file" href="iss/files/ISS_v7_slot27_cardboard_A3.pdf">A3 紙板原型</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-use">
+    <h2 id="t-use">課堂與雷切</h2>
+    <div class="cols">
+      <div class="note">
+        <h3>國小：先玩再說</h3>
+        <ul>
+          <li>組裝圖切到「國小版」，跟著 8 步驟組裝。</li>
+          <li>在 AR 挑戰裡讓老鷹停在指尖上，比賽誰撐得久。</li>
+          <li>上色後拍合照，帶回家和家人分享。</li>
+        </ul>
+      </div>
+      <div class="note">
+        <h3>國中：用數字說明</h3>
+        <ul>
+          <li>打開「顯示重心」，記錄改變前後重心移動幾 mm、傾斜幾度。</li>
+          <li>比較羽毛、魚、太陽能板：哪一種改變影響最大？為什麼？</li>
+          <li>用力矩＝重量 × 距離，解釋 1 條魚為什麼能讓鵜鶘轉 6°。</li>
+        </ul>
+      </div>
+      <div class="note">
+        <h3>雷切設定</h3>
+        <ul>
+          <li>3 mm 夾板，紅線切割、藍線雕刻。</li>
+          <li>插槽畫 <span class="mono">2.7 mm</span>（切縫約 <span class="mono">0.3 mm</span>），插起來才卡得緊。</li>
+          <li>先試切一片插槽和鎖片，太緊改 2.8、太鬆改 2.6。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="brand">學思創客<span>XUESI MAKER</span></div>
+    <p>設計與教材：何政學。本頁的網頁、雷切檔與說明採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" rel="license">CC BY-NC-SA 4.0</a> 授權：歡迎非商業使用與改作，請註明出處並以相同方式分享。</p>
+    <p><a href="https://zhengxuetech.github.io/">回到 zhengxuetech.github.io</a></p>
+  </footer>
+</div>
+</body>
+</html>
