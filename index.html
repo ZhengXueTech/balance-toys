@@ -56,6 +56,14 @@ section{padding-block:28px}
 .note h3{font:700 19px var(--f-display);margin:0 0 6px}
 .note ul{margin:0;padding-left:1.2em}
 .note li{margin-bottom:4px}
+.arbox{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:20px}
+.qrcol{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.qr{width:180px;max-width:100%;background:#fff;padding:8px;border-radius:10px;border:1.5px solid var(--line)}
+.qr svg{width:100%;height:auto;display:block}
+.qrbrand{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.qrbrand select{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:5px 8px}
+.artext{min-width:0}.artext p{margin:0 0 8px}.artext ul{margin:0 0 12px;padding-left:1.2em}
+@media (max-width:560px){.arbox{grid-template-columns:1fr}}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 footer{padding-block:28px 40px;color:var(--muted);font-size:14px;border-top:1.5px solid var(--line);margin-top:20px}
 footer .brand{font:700 18px var(--f-display);color:var(--ink)}
@@ -130,6 +138,28 @@ footer .brand span{font:13px var(--f-mono);letter-spacing:.14em;color:var(--lase
     </div>
   </section>
 
+  <section aria-labelledby="t-ar">
+    <h2 id="t-ar">AR：讓老鷹停在你的指尖</h2>
+    <div class="arbox">
+      <div class="qrcol">
+        <div class="qr" id="ar-qr" aria-label="老鷹 AR 頁的 QR code"></div>
+        <label class="qrbrand" for="qr-brand">QR 浮水印版本
+          <select id="qr-brand"><option value="xuesi">學思創客</option><option value="zz">中正創客（學校擺攤）</option><option value="zzm">中正MAKER</option></select>
+        </label>
+      </div>
+      <div class="artext">
+        <p>用手機掃 QR，打開前鏡頭：</p>
+        <ul>
+          <li><b>平衡挑戰</b>：伸出食指，老鷹的鳥喙停在指尖上，撐越久越好，還會有陣風。</li>
+          <li><b>與作品合照</b>：拿著自己做的老鷹入鏡，虛擬老鷹會「繞著我飛」，倒數 3／5／10 秒自動拍照。</li>
+          <li>照片右下角印上浮水印；擺攤時先選「中正創客」，學生一掃就是中正版。</li>
+        </ul>
+        <p class="sec-note">手指辨識在手機上執行，畫面不會上傳。LINE 內建瀏覽器會改用手機的瀏覽器開啟。</p>
+        <a class="btn go" id="ar-open" href="eagle/ar.html">打開 AR</a>
+      </div>
+    </div>
+  </section>
+
   <section aria-labelledby="t-use">
     <h2 id="t-use">課堂與雷切</h2>
     <div class="cols">
@@ -166,5 +196,18 @@ footer .brand span{font:13px var(--f-mono);letter-spacing:.14em;color:var(--lase
     <p><a href="https://zhengxuetech.github.io/">回到 zhengxuetech.github.io</a></p>
   </footer>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+/* 首頁 AR 區塊：依「QR 浮水印版本」產生 QR；擺攤選中正創客，學生一掃就是中正版 */
+(function(){
+  const sel=document.getElementById('qr-brand'),box=document.getElementById('ar-qr'),open=document.getElementById('ar-open');
+  function draw(){try{
+      const u=new URL('eagle/ar.html',location.href);u.searchParams.set('openExternalBrowser','1');if(sel.value!=='xuesi')u.searchParams.set('brand',sel.value);
+      open.href='eagle/ar.html'+(sel.value!=='xuesi'?'?brand='+sel.value:'');
+      const q=qrcode(0,'M');q.addData(u.href);q.make();box.innerHTML=q.createSvgTag({cellSize:4,margin:1,scalable:true});
+    }catch(e){box.textContent='QR 無法產生'}}
+  sel.onchange=draw;draw();
+})();
+</script>
 </body>
 </html>

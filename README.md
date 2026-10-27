@@ -8,11 +8,17 @@
 |---|---|
 | 首頁 | `index.html` |
 | 老鷹平衡鳥 8 步組裝圖 | `eagle/assembly.html` |
-| 老鷹 AR 平衡挑戰（前鏡頭手勢追蹤） | `eagle/ar.html` |
+| 老鷹 AR 平衡挑戰＋與作品合照（繞著我飛） | `eagle/ar.html` |
 | 鵜鶘平衡實驗室 | `pelican/lab.html` |
 | 太空站平衡實驗室 | `iss/lab.html` |
 
 每個頁面都是單一 HTML 檔，Three.js 從 cdnjs 載入；AR 頁的手指辨識（MediaPipe Hands）從 jsDelivr 載入，在使用者裝置上執行，畫面不會上傳。
+
+## AR 浮水印
+
+- 預設浮水印是「學思創客」。網址加 `?brand=zz` 是中正創客，`?brand=zzm` 是中正MAKER。
+- 首頁 AR 區塊的「QR 浮水印版本」選單會跟著換 QR，擺攤時選中正創客再截圖列印。
+- 在 AR 頁「與作品合照」的浮水印選單選過後，同一支手機會記住。
 
 ## 雷切檔
 

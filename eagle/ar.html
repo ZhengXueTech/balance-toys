@@ -38,8 +38,8 @@ button{font:inherit;color:inherit}
 .tilt i{display:block;width:70px;height:6px;border-radius:3px;background:rgba(255,255,255,.12);position:relative;overflow:hidden}
 .tilt i b{position:absolute;top:0;bottom:0;left:50%;width:3px;background:var(--ok);border-radius:2px}
 .toast{position:absolute;left:50%;top:84px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--line);
-  border-radius:999px;padding:7px 16px;font-size:15px;z-index:4;white-space:nowrap;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
-.count{position:absolute;inset:0;display:grid;place-items:center;font:700 120px var(--f-mono);color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.6);z-index:5;pointer-events:none}
+  border-radius:16px;padding:7px 16px;font-size:15px;z-index:4;max-width:calc(100% - 32px);width:max-content;text-align:center;line-height:1.5}
+.count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 120px var(--f-mono);color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.6);z-index:5;pointer-events:none}
 .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:6;transition:opacity .35s}
 .sheet{position:absolute;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;background:rgba(8,11,13,.72);
   padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));overflow:auto}
@@ -64,6 +64,16 @@ button{font:inherit;color:inherit}
 .shutter:active{transform:scale(.94)}
 .play{border:0;background:var(--wood);color:#2a1d0c;border-radius:999px;padding:11px 20px;font-weight:700;cursor:pointer;white-space:nowrap}
 .play[aria-pressed="true"]{background:var(--laser);color:#fff}
+.extras{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:var(--bg);border-top:1px solid var(--line);
+  padding-block:8px 0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--wood);color:#2a1d0c;font-weight:700}
+.brandsel{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.brandsel select{font:inherit;color:var(--ink);background:#1c242a;border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+.count{flex-direction:column}
+.count small{font:500 17px var(--f-body);text-shadow:0 1px 6px #000;margin-top:4px}
+.bar,.stage,.extras{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .ver{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:8px;font:11px var(--f-mono);color:var(--muted);letter-spacing:.1em;z-index:3;pointer-events:none}
 @media (max-width:480px){.brand{font-size:16px}.time{font-size:22px}.chip{padding:7px 10px;font-size:13px}.play{padding:10px 14px}.shutter{width:58px;height:58px}}
 @media (prefers-reduced-motion:reduce){.flash{transition:none}.shutter:active{transform:none}}
@@ -76,17 +86,17 @@ button{font:inherit;color:inherit}
     <input type="file" id="file" accept="image/*" hidden>
     <canvas id="gl"></canvas>
     <div class="hud">
-      <div class="brand"><small>學思創客 · AR</small>老鷹平衡挑戰</div>
-      <div class="meter">
+      <div class="brand"><small id="brand-head">學思創客 XUESI MAKER · AR</small>老鷹平衡挑戰</div>
+      <div class="meter" id="meter">
         <div class="time" id="time">0.0 秒</div>
         <div class="best" id="best">最佳 —</div>
         <div class="tilt">傾斜 <i><b id="tiltbar"></b></i> <span id="tiltv">0°</span></div>
       </div>
     </div>
     <div class="toast" id="toast" hidden></div>
-    <div class="count" id="count" hidden></div>
+    <div class="count" id="count" hidden><span id="count-n">3</span><small id="count-s">擺好姿勢！</small></div>
     <div class="flash" id="flash"></div>
-    <div class="ver">EAGLE AR v1.0</div>
+    <div class="ver">EAGLE AR v1.1</div>
 
     <section class="sheet" id="intro">
       <div class="card">
@@ -132,10 +142,16 @@ button{font:inherit;color:inherit}
     </section>
   </div>
 
+  <div class="extras" id="extras" hidden>
+    <span class="seg" role="group" aria-label="合照玩法"><button type="button" data-fm="fly" aria-pressed="true">繞著我飛</button><button type="button" data-fm="perch" aria-pressed="false">停在指尖</button></span>
+    <button class="chip" id="b-timer" aria-label="自拍計時">計時 3 秒</button>
+    <label class="brandsel" for="brand">浮水印<select id="brand"><option value="xuesi">學思創客</option><option value="zz">中正創客</option><option value="zzm">中正MAKER</option></select></label>
+  </div>
   <div class="bar">
     <button class="chip" id="b-mode" aria-pressed="false" title="切換操作方式">手指拖曳</button>
-    <button class="shutter" id="b-shoot" aria-label="和老鷹合照（倒數 3 秒）"></button>
+    <button class="shutter" id="b-shoot" aria-label="拍合照（依計時倒數）"></button>
     <button class="play" id="b-play" aria-pressed="false">開始挑戰</button>
+    <button class="chip" id="b-booth" aria-pressed="false">與作品合照</button>
   </div>
 </div>
 
@@ -149,6 +165,11 @@ const VIEW=[.5,.75];       // 視角：俯角、轉向（rad）
 const L_EQ=.38;            // 等效擺長（m）：轉動慣量／(質量×重心到支點距離)，翼展 18 cm、重心在鳥喙下 6.7 mm
 const FALL_ANGLE=35*D;     // 鳥喙彎鉤勾得住的最大傾斜
 const $=id=>document.getElementById(id);
+/* 品牌（浮水印、頁首）：網址 ?brand=zz 或 zzm 可指定（擺攤 QR 用），選過會記在這支手機 */
+const BRANDS={xuesi:{wm:'學思創客 XUESI MAKER',head:'學思創客 XUESI MAKER · AR'},zz:{wm:'中正創客',head:'中正創客 · AR'},zzm:{wm:'中正MAKER',head:'中正MAKER · AR'}};
+let brandKey=(()=>{const q=new URLSearchParams(location.search).get('brand');if(q&&BRANDS[q])return q;
+  try{const v=localStorage.getItem('eagle-brand');if(v&&BRANDS[v])return v}catch(e){}return 'xuesi'})();
+const brand=()=>BRANDS[brandKey];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const stage=$('stage'), video=$('video');
 
@@ -255,7 +276,7 @@ $('b-mode').onclick=()=>{if(mode==='hand')setMode('touch');else if(camOn&&handsR
 
 /* ---------- 遊戲流程 ---------- */
 function respawn(){phi=0;om=0;falling=null;bird.visible=true;vx=vy=ax=ay=0;pvx=pvy=0}
-function startPlay(){$('over').hidden=true;respawn();state='play';tPlay=0;nextGust=6;$('b-play').textContent='停止';$('b-play').setAttribute('aria-pressed','true')}
+function startPlay(){if(booth)setBooth(false);$('over').hidden=true;respawn();state='play';tPlay=0;nextGust=6;$('b-play').textContent='停止';$('b-play').setAttribute('aria-pressed','true')}
 function stopPlay(){state='idle';$('b-play').textContent='開始挑戰';$('b-play').setAttribute('aria-pressed','false')}
 $('b-play').onclick=()=>{if(state==='play')stopPlay();else startPlay()};
 $('b-again').onclick=startPlay;
@@ -280,8 +301,46 @@ function drop(why){
 /* ---------- 合照：倒數 3 秒 → 鏡頭畫面＋老鷹 ---------- */
 let shotBlob=null, downloads=null;
 (async()=>{try{downloads=window.claude&&await window.claude.use('downloads')}catch(e){downloads=null}})();
-$('b-shoot').onclick=()=>{let n=3;const c=$('count');c.hidden=false;c.textContent=n;
-  const iv=setInterval(()=>{n--;if(n>0){c.textContent=n}else{clearInterval(iv);c.hidden=true;capture()}},1000)};
+function setBrand(k){if(!BRANDS[k])k='xuesi';brandKey=k;try{localStorage.setItem('eagle-brand',k)}catch(e){}$('brand').value=k;$('brand-head').textContent=brand().head}
+$('brand').onchange=e=>setBrand(e.target.value);setBrand(brandKey);
+/* 自拍計時：3／5／10 秒／關，倒數有嗶聲；倒數中再按快門取消 */
+let timerSec=3, cd=null, actx=null;
+const TIMERS=[3,5,10,0];
+function setTimer(n){timerSec=n;$('b-timer').textContent=n?`計時 ${n} 秒`:'計時 關'}
+$('b-timer').onclick=()=>setTimer(TIMERS[(TIMERS.indexOf(timerSec)+1)%TIMERS.length]);
+function beep(f,d){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
+  const o=actx.createOscillator(),gn=actx.createGain(),t=actx.currentTime;o.frequency.value=f;o.connect(gn);gn.connect(actx.destination);
+  gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(.25,t+.01);gn.gain.exponentialRampToValueAtTime(.0001,t+d);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function cancelCount(){if(cd){clearInterval(cd.iv);cd=null}$('count').hidden=true}
+function countdown(n,label,done){cancelCount();if(!n){done();return}
+  cd={n};$('count').hidden=false;$('count-n').textContent=n;$('count-s').textContent=label;beep(880,.12);
+  cd.iv=setInterval(()=>{cd.n--;if(cd.n>0){$('count-n').textContent=cd.n;beep(880,.12)}else{cancelCount();beep(1320,.25);done()}},1000)}
+$('b-shoot').onclick=()=>{if(cd){cancelCount();return}
+  countdown(booth||state!=='play'?timerSec:3,booth&&flyMode?'拿著你的老鷹入鏡！':'擺好姿勢！',capture)};
+
+/* 與作品合照：繞著我飛（一個人自拍）／停在指尖 */
+let booth=false, flyMode=true;
+const fly={a:Math.PI/2};
+function setFly(on){flyMode=on;document.querySelectorAll('[data-fm]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.fm==='fly')===on));
+  bird.rotation.set(0,0,0);tiltG.rotation.x=VIEW[0];yawG.rotation.y=VIEW[1];rollG.rotation.z=0;phi=om=0;falling=null;bird.visible=true;haveTip=false;
+  toast(on?'拿著你的老鷹入鏡，牠會繞著你飛。按快門倒數拍照':(mode==='hand'?'伸出食指，讓老鷹停上去':'拖曳木樁，把老鷹放到想要的位置'),3.5)}
+document.querySelectorAll('[data-fm]').forEach(b=>b.onclick=()=>{cancelCount();setFly(b.dataset.fm==='fly')});
+function setBooth(on){booth=on;cancelCount();if(on)stopPlay();$('over').hidden=true;
+  $('extras').hidden=!on;$('b-play').hidden=on;$('meter').hidden=on;$('b-booth').textContent=on?'回到挑戰':'與作品合照';$('b-booth').setAttribute('aria-pressed',on);
+  if(on)setFly(true);else{flyMode=false;setFly(false)}}
+$('b-booth').onclick=()=>setBooth(!booth);
+/* 繞飛路徑：畫面上的橢圓＝鏡頭前的水平圓圈。下方較近、較大；頭頂較遠、較小。機頭朝前進方向，轉彎時向內側傾 */
+function flyTick(dt,now){
+  fly.a+=dt*(matchMedia('(prefers-reduced-motion: reduce)').matches?.3:.6);
+  const s=Math.sin(fly.a),c=Math.cos(fly.a),depth=1+.38*s;
+  const x=W/2+.27*W*c, y=H*.42+.16*H*s+Math.sin(now*2.2)*H*.012;
+  const ppm=.26*Math.min(W,H*1.2)/.187*depth;            // 翼展約佔畫面寬 30%，近大遠小
+  bird.scale.setScalar(ppm/100);
+  pivotG.position.set(x,H-y,0);rollG.rotation.z=0;tiltG.rotation.x=.8;   // 從斜上方看，翅膀整片看得到
+  yawG.rotation.y=-fly.a;                                  // 前進方向（俯視的切線）
+  bird.rotation.z=.12*Math.sin(now*1.7);bird.rotation.x=.1*Math.sin(now*1.3+1);   // 滑翔時輕輕晃動
+  post.visible=false;
+}
 function capture(){
   const dpr=renderer.getPixelRatio(),cv=document.createElement('canvas');cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
   const g=cv.getContext('2d');g.scale(dpr,dpr);
@@ -293,7 +352,7 @@ function capture(){
   renderer.render(scene,camera);g.drawImage(renderer.domElement,0,0,W,H);
   const d=new Date(),ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
   g.fillStyle='rgba(13,17,20,.62)';g.fillRect(0,H-44,W,44);g.fillStyle='#f1ece4';g.font='600 16px "LXGW WenKai TC","Noto Sans TC",sans-serif';
-  g.fillText('老鷹平衡鳥 AR · 學思創客',14,H-17);g.textAlign='right';g.font='14px "Share Tech Mono",monospace';g.fillText(ds,W-14,H-17);
+  g.fillText(brand().wm+' · 我的平衡鳥',14,H-17);g.textAlign='right';g.font='14px "Share Tech Mono",monospace';g.fillText(ds,W-14,H-17);
   const f=$('flash');f.style.opacity=1;setTimeout(()=>f.style.opacity=0,120);
   cv.toBlob(b=>{shotBlob=b;$('shot-img').src=URL.createObjectURL(b);
     $('shot-note').textContent='按「儲存照片」存到裝置；也可以長按（或按右鍵）圖片另存。';
@@ -316,6 +375,7 @@ function animate(){
   let dt=clock.getDelta();if(dt>.1)dt=.1;   // 每幀只取一次
   const now=clock.elapsedTime;
   if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').hidden=true}
+  if(booth&&flyMode){flyTick(dt,now);renderer.render(scene,camera);return}
   // 指尖位置：濾掉辨識抖動
   const seen=tipRaw&&(mode==='touch'||now-lastSeen<.6);
   if(seen){
