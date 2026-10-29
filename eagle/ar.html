@@ -77,6 +77,7 @@ button{font:inherit;color:inherit}
 @media (max-width:480px){.brand{font-size:16px}.time{font-size:22px}.chip{padding:7px 10px;font-size:13px}.play{padding:10px 14px}.shutter{width:58px;height:58px}}
 @media (prefers-reduced-motion:reduce){.flash{transition:none}.shutter:active{transform:none}}
 </style>
+<style id="home-link-css">.home-link{display:inline-flex;align-items:center;gap:4px;font:600 13px "Noto Sans TC",system-ui,sans-serif;color:inherit;opacity:.72;text-decoration:none;margin:0 0 6px;padding:4px 10px 4px 8px;border:1px solid currentColor;border-radius:999px;pointer-events:auto;width:max-content}.home-link:hover,.home-link:focus-visible{opacity:1}.home-link[hidden]{display:none!important}</style>
 
 <div class="app">
   <div class="stage" id="stage">
@@ -85,7 +86,7 @@ button{font:inherit;color:inherit}
     <input type="file" id="file" accept="image/*" hidden>
     <canvas id="gl"></canvas>
     <div class="hud">
-      <div class="brand"><small id="brand-head">學思創客 XUESI MAKER · AR</small>老鷹平衡挑戰</div>
+      <a class="home-link" style="display:flex;white-space:nowrap;font-size:12px;margin-bottom:8px;text-shadow:none;background:rgba(13,17,20,.45)" href="../index.html" hidden aria-label="回平衡玩具世界首頁">← 平衡玩具首頁</a><div class="brand"><small id="brand-head">學思創客 XUESI MAKER · AR</small>老鷹平衡挑戰</div>
       <div class="meter" id="meter">
         <div class="time" id="time">0.0 秒</div>
         <div class="best" id="best">最佳 —</div>
@@ -449,3 +450,4 @@ function animate(){
 resize();setMode('touch');animate();
 })();
 </script>
+<script id="home-link-js">(function(){var ok=/\.html?$/i.test(location.pathname)||/github\.io$/i.test(location.hostname);if(ok)document.querySelectorAll(".home-link").forEach(function(e){e.hidden=false})})();</script>

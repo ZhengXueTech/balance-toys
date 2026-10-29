@@ -84,6 +84,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .state.warn{background:#c98a1b}.state.bad{background:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<style id="home-link-css">.home-link{display:inline-flex;align-items:center;gap:4px;font:600 13px "Noto Sans TC",system-ui,sans-serif;color:inherit;opacity:.72;text-decoration:none;margin:0 0 6px;padding:4px 10px 4px 8px;border:1px solid currentColor;border-radius:999px;pointer-events:auto;width:max-content}.home-link:hover,.home-link:focus-visible{opacity:1}.home-link[hidden]{display:none!important}</style>
 
 <div id="app">
   <div id="stage">
@@ -94,7 +95,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
   <aside id="panel">
     <header>
-      <div class="eyebrow">雷切木作 · 3mm 板 · 15 片</div>
+      <a class="home-link" href="../index.html" hidden aria-label="回平衡玩具世界首頁">← 平衡玩具首頁</a>
+    <div class="eyebrow">雷切木作 · 3mm 板 · 15 片</div>
       <h1>老鷹平衡鳥 第二款</h1>
       <div class="sub">展翅＋爪子版 組裝圖（外形與重心依雷切檔 V2_2 修改版）</div>
       <nav class="kind" id="kind" aria-label="款式" hidden><a href="assembly.html">第一款</a><a href="assembly2.html" aria-current="page">第二款</a><a href="assembly3.html">抓獵物</a></nav>
@@ -469,3 +471,4 @@ resize();cam.t.copy(want.t);cam.yaw=want.yaw;cam.pitch=want.pitch+.15;cam.dist=w
 updateWing();updateEq();renderUI();animate();
 })();
 </script>
+<script id="home-link-js">(function(){var ok=/\.html?$/i.test(location.pathname)||/github\.io$/i.test(location.hostname);if(ok)document.querySelectorAll(".home-link").forEach(function(e){e.hidden=false})})();</script>

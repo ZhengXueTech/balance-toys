@@ -62,6 +62,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
   h1{font-size:20px}.sub{display:none}
 }
 </style>
+<style id="home-link-css">.home-link{display:inline-flex;align-items:center;gap:4px;font:600 13px "Noto Sans TC",system-ui,sans-serif;color:inherit;opacity:.72;text-decoration:none;margin:0 0 6px;padding:4px 10px 4px 8px;border:1px solid currentColor;border-radius:999px;pointer-events:auto;width:max-content}.home-link:hover,.home-link:focus-visible{opacity:1}.home-link[hidden]{display:none!important}</style>
 
 <div id="app">
   <div id="stage">
@@ -74,7 +75,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
   </div>
   <aside id="panel">
     <header>
-      <div class="eyebrow">LASER-CUT · 3MM · TRUSS 18CM</div>
+      <a class="home-link" href="../index.html" hidden aria-label="回平衡玩具世界首頁">← 平衡玩具首頁</a>
+    <div class="eyebrow">LASER-CUT · 3MM · TRUSS 18CM</div>
       <h1>太空站平衡實驗室</h1>
       <div class="sub">轉動太陽能板、增減零件，觀察太空站的重心怎麼移動。數字依 v1 雷切檔的零件面積計算。</div>
     </header>
@@ -414,3 +416,4 @@ resize();update();shipUI();swingA=.15;animate();
 </script>
 
 </body></html>
+<script id="home-link-js">(function(){var ok=/\.html?$/i.test(location.pathname)||/github\.io$/i.test(location.hostname);if(ok)document.querySelectorAll(".home-link").forEach(function(e){e.hidden=false})})();</script>

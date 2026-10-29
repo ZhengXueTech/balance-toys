@@ -43,6 +43,7 @@ ol li{margin-bottom:6px}
   #panel{border-left:0;border-top:1px solid var(--line)}
 }
 </style>
+<style id="home-link-css">.home-link{display:inline-flex;align-items:center;gap:4px;font:600 13px "Noto Sans TC",system-ui,sans-serif;color:inherit;opacity:.72;text-decoration:none;margin:0 0 6px;padding:4px 10px 4px 8px;border:1px solid currentColor;border-radius:999px;pointer-events:auto;width:max-content}.home-link:hover,.home-link:focus-visible{opacity:1}.home-link[hidden]{display:none!important}</style>
 </head>
 <body>
 <div id="app">
@@ -54,6 +55,7 @@ ol li{margin-bottom:6px}
     <div class="hint">拖曳旋轉 · 滾輪或雙指縮放</div>
   </div>
   <aside id="panel">
+    <a class="home-link" href="../index.html" hidden aria-label="回平衡玩具世界首頁">← 平衡玩具首頁</a>
     <div class="eyebrow">LASER-CUT · 3MM · WINGSPAN 19CM</div>
     <h1>鵜鶘平衡實驗室</h1>
     <p class="lead">鵜鶘用喉囊底下的小尖點坐在木樁上。嘴尖掛鉤可以掛魚：餵牠幾條魚，看看牠會抬頭還是低頭。數字依雷切檔的零件面積計算。</p>
@@ -230,3 +232,4 @@ window.__sim={com,get eq(){return eq},get C(){return C}};
 </script>
 </body>
 </html>
+<script id="home-link-js">(function(){var ok=/\.html?$/i.test(location.pathname)||/github\.io$/i.test(location.hostname);if(ok)document.querySelectorAll(".home-link").forEach(function(e){e.hidden=false})})();</script>
