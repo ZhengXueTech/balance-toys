@@ -64,6 +64,11 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   h1{font-size:22px} .note,.sub{display:none} .seg{margin-top:8px} h2{font-size:20px}
   #txt{font-size:15px} #txt.elem{font-size:16px}
 }
+[hidden]{display:none!important}   /* [FIX 12] .lab/.extra 的 display:flex 會蓋掉 hidden */
+.kind{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:12px 8px 0 0;vertical-align:top}
+.kind[hidden]{display:none}
+.kind a{font:500 13px var(--f-body);padding:6px 14px;color:var(--muted);text-decoration:none}
+.kind a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
 .lab{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
 .lab-h{font:700 15px var(--f-display)}
 .row{display:grid;grid-template-columns:5.5em minmax(0,1fr) 3.6em;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
@@ -82,7 +87,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 <div id="app">
   <div id="stage">
-    <div class="ver">BALANCE BIRD v1.6</div>
+    <div class="ver">BALANCE BIRD v1.7</div>
     <div class="tag pv" id="tagPv" hidden>支點</div>
     <div class="tag cm" id="tagCm" hidden>重心</div>
     <div class="hint">拖曳旋轉 · 滾輪或雙指縮放 · ← → 換步驟</div>
@@ -92,6 +97,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <div class="eyebrow">雷切木作 · 3mm 板 · 14 片</div>
       <h1>老鷹平衡鳥</h1>
       <div class="sub">第二版 組裝圖（外形與重心依原始雷切檔）</div>
+      <nav class="kind" id="kind" aria-label="款式" hidden><a href="assembly.html" aria-current="page">第一款</a><a href="assembly2.html">第二款</a><a href="assembly3.html">抓獵物</a></nav>
       <div class="seg" role="group" aria-label="說明程度">
         <button id="lvE" aria-pressed="true">國小版</button><button id="lvJ" aria-pressed="false">國中版</button>
       </div>
@@ -317,6 +323,7 @@ let aspect=1;
 
 /* ---------- UI ---------- */
 const $=id=>document.getElementById(id);
+if(/\.html?$/i.test(location.pathname))$('kind').hidden=false;
 const dots=$('dots');
 STEPS.forEach((s,i)=>{const b=document.createElement('button');b.id='dot'+i;b.textContent=i+1;b.title=s.t;b.setAttribute('aria-label','步驟 '+(i+1)+' '+s.t);b.onclick=()=>setStep(i);dots.appendChild(b)});
 function renderUI(){

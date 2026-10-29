@@ -7,8 +7,10 @@
 | 頁面 | 檔案 |
 |---|---|
 | 首頁 | `index.html` |
-| 老鷹平衡鳥 8 步組裝圖 | `eagle/assembly.html` |
-| 老鷹 AR 平衡挑戰＋與作品合照（繞著我飛） | `eagle/ar.html` |
+| 老鷹平衡鳥 第一款 8 步組裝圖 | `eagle/assembly.html` |
+| 老鷹平衡鳥 第二款（展翅＋爪子）組裝圖 | `eagle/assembly2.html` |
+| 老鷹抓獵物（第二款 V2_3，換獵物重心實驗） | `eagle/assembly3.html` |
+| 老鷹 AR 平衡挑戰＋與作品合照（繞著我飛，可選第一款或抓魚的老鷹；`?eagle=prey` 直接開抓魚款） | `eagle/ar.html` |
 | 鵜鶘平衡實驗室 | `pelican/lab.html` |
 | 太空站平衡實驗室 | `iss/lab.html` |
 
