@@ -1,0 +1,468 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>鵜鶘第二款</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=Share+Tech+Mono&display=swap">
+<style>
+/* 版面和老鷹組裝圖同一套：左側 3D 工作檯，右側（手機在下方）步驟面板 */
+:root{
+  --bg:#dce8ef; --bg2:#c3d6e1; --panel:#f6f8f9; --ink:#1c2a31; --muted:#5a6a72; --line:#cfd8dd;
+  --accent:#cf3348; --accent-ink:#ffffff; --wood:#b88a52; --ok:#2c8a57; --chip:#ebeff1; --fish:#2f7fb5; --gift:#c2475a;
+  --f-display:"LXGW WenKai TC","Noto Sans TC","PingFang TC","Microsoft JhengHei",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"Share Tech Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141b1f; --bg2:#0d1215; --panel:#1b2429; --ink:#e7edf0; --muted:#9aabb3; --line:#2c3a41;
+  --accent:#ec5468; --accent-ink:#ffffff; --wood:#d4a868; --ok:#4cc184; --chip:#243037; --fish:#5fb0e6; --gift:#ec7488; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141b1f; --bg2:#0d1215; --panel:#1b2429; --ink:#e7edf0; --muted:#9aabb3; --line:#2c3a41;
+  --accent:#ec5468; --accent-ink:#ffffff; --wood:#d4a868; --ok:#4cc184; --chip:#243037; --fish:#5fb0e6; --gift:#ec7488; color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);overflow:hidden}
+#app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,400px)}
+#stage{position:relative;min-width:0;min-height:0;background:radial-gradient(120% 90% at 40% 30%,var(--bg) 0%,var(--bg2) 100%);overflow:hidden}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#stage canvas:active{cursor:grabbing}
+.hint{position:absolute;left:calc(14px + env(safe-area-inset-left,0px));bottom:12px;font:12px/1.4 var(--f-body);color:var(--muted);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:5px 10px;border-radius:6px;pointer-events:none}
+.ver{position:absolute;right:12px;top:10px;font:12px var(--f-mono);color:var(--muted);letter-spacing:.08em;pointer-events:none}
+.tag{position:absolute;transform:translate(10px,-50%);font:600 12px var(--f-body);padding:2px 7px;border-radius:4px;color:#fff;pointer-events:none;white-space:nowrap}
+.tag.pv{background:var(--ok)} .tag.cm{background:var(--accent)}
+.nt{position:absolute;transform:translate(-50%,-135%);font:700 13px var(--f-mono);min-width:26px;height:26px;padding:0 6px;border-radius:13px;border:2px solid var(--ink);background:var(--panel);color:var(--ink);cursor:pointer}
+.nt.fish{background:var(--fish);border-color:var(--fish);color:#fff}.nt.gift{background:var(--gift);border-color:var(--gift);color:#fff}
+#panel{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;
+  padding-block:20px 16px;padding-left:20px;padding-right:max(20px,env(safe-area-inset-right,0px));gap:16px;overflow:auto}
+.eyebrow{font:12px var(--f-mono);color:var(--accent);letter-spacing:.12em}
+h1{font:700 30px/1.15 var(--f-display);margin:4px 0 0;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:12px}
+.seg button{font:500 13px var(--f-body);padding:6px 14px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.kind{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:12px 8px 0 0;vertical-align:top}
+.kind a{font:500 13px var(--f-body);padding:6px 14px;color:var(--muted);text-decoration:none}
+.kind a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+#dots{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+#dots button{font:15px var(--f-mono);aspect-ratio:1;max-width:100%;border:1px solid var(--line);background:var(--chip);color:var(--muted);border-radius:6px;cursor:pointer}
+#dots button.done{color:var(--ink);border-color:var(--wood)}
+#dots button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.card{display:flex;flex-direction:column;gap:10px;flex:1}
+.num{font:13px var(--f-mono);color:var(--muted);letter-spacing:.1em}
+h2{font:700 24px/1.25 var(--f-display);margin:0;text-wrap:balance}
+#txt{margin:0;font-size:16px;line-height:1.75;max-width:60ch}
+#txt.elem{font-size:18px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:13px var(--f-body);border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:5px 10px;border-radius:999px;cursor:pointer}
+.chips button b{font:12px var(--f-mono);color:var(--accent);margin-left:4px}
+.extra{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:600 14px var(--f-body);padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
+.btn.sm{font-size:13px;padding:7px 10px}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+nav.steps{display:grid;grid-template-columns:1fr auto 1.4fr;gap:8px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.note{font-size:12px;color:var(--muted);line-height:1.6;border-top:1px dashed var(--line);padding-top:10px}
+.lab{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg)}
+.lab-h{font:700 15px var(--f-display)}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.slot{display:flex;flex-direction:column;gap:4px;align-items:stretch}
+.slot>span{font:12px var(--f-mono);color:var(--muted);text-align:center}
+.slot button{font:600 13px var(--f-body);height:30px;border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:6px;cursor:pointer}
+.slot button[aria-pressed="true"][data-v=""]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.slot button[aria-pressed="true"][data-v="fish"]{background:var(--fish);color:#fff;border-color:var(--fish)}
+.slot button[aria-pressed="true"][data-v="gift"]{background:var(--gift);color:#fff;border-color:var(--gift)}
+.slot button:disabled{opacity:.35;cursor:default}
+.row{display:grid;grid-template-columns:5.5em minmax(0,1fr) 3.8em;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.row input{width:100%;accent-color:var(--accent)}
+.row output{font:13px var(--f-mono);color:var(--ink);text-align:right}
+.tip{font-size:12.5px;color:var(--muted);line-height:1.6}
+.read{font:13px/1.6 var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.read b{font-weight:400;color:var(--accent)}
+.state{display:inline-block;font:700 13px var(--f-body);padding:2px 10px;border-radius:999px;background:var(--ok);color:#fff;margin-bottom:4px}
+.state.warn{background:#c98a1b}.state.bad{background:var(--accent)}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:860px){
+  #app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  #panel{border-left:0;border-top:1px solid var(--line);max-height:50vh;max-height:50dvh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px;gap:12px}
+  h1{font-size:22px} .note,.sub{display:none} .seg{margin-top:8px} h2{font-size:20px}
+  #txt{font-size:15px} #txt.elem{font-size:16px}
+}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style id="home-link-css">.home-link{display:inline-flex;align-items:center;gap:4px;font:600 13px "Noto Sans TC",system-ui,sans-serif;color:inherit;opacity:.72;text-decoration:none;margin:0 0 6px;padding:4px 10px 4px 8px;border:1px solid currentColor;border-radius:999px;pointer-events:auto;width:max-content}.home-link:hover,.home-link:focus-visible{opacity:1}.home-link[hidden]{display:none!important}</style>
+
+<div id="app">
+  <div id="stage">
+    <div class="ver">PELICAN 2 v1.0</div>
+    <div class="tag pv" id="tagPv" hidden>支點</div>
+    <div class="tag cm" id="tagCm" hidden>重心</div>
+    <button class="nt" id="nt0" hidden aria-label="第 1 格">1</button><button class="nt" id="nt1" hidden aria-label="第 2 格">2</button><button class="nt" id="nt2" hidden aria-label="第 3 格">3</button><button class="nt" id="nt3" hidden aria-label="第 4 格">4</button>
+    <div class="hint">拖曳旋轉 · 滾輪或雙指縮放 · ← → 換步驟</div>
+  </div>
+  <aside id="panel">
+    <header>
+      <a class="home-link" href="../index.html" hidden aria-label="回平衡玩具世界首頁">← 平衡玩具首頁</a>
+    <div class="eyebrow">雷切木作 · 3mm 板 · 31 片 · 30×20 cm</div>
+      <h1>鵜鶘第二款：餵魚平衡</h1>
+      <div class="sub">支點在下巴，張開的嘴有 4 個格子。H 形魚和禮物放上去，看鵜鶘怎麼動（重心依雷切檔面積計算）</div>
+      <nav class="kind" id="kind" aria-label="款式" hidden><a href="lab.html">第一款</a><a href="lab2.html" aria-current="page">第二款</a></nav>
+      <div class="seg" role="group" aria-label="說明程度">
+        <button id="lvE" aria-pressed="true">國小版</button><button id="lvJ" aria-pressed="false">國中版</button>
+      </div>
+    </header>
+    <div id="dots" aria-label="步驟"></div>
+    <section class="card">
+      <div class="num" id="num"></div>
+      <h2 id="ttl"></h2>
+      <p id="txt"></p>
+      <div class="chips" id="chips"></div>
+      <div class="extra" id="extra" hidden>
+        <button class="btn" id="push">輕推一下</button>
+        <button class="btn" id="com" aria-pressed="false">顯示重心</button>
+      </div>
+      <div class="lab" id="lab" hidden>
+        <div class="lab-h">餵魚實驗：1～4 號格放什麼？</div>
+        <div class="slots" id="slots"></div>
+        <div class="tip" id="stock"></div>
+        <label class="row" for="wA"><span>大翅膀</span><input type="range" id="wA" min="25" max="95" step="1" value="59"><output id="wAV">59°</output></label>
+        <label class="row" for="wB"><span>小翅膀</span><input type="range" id="wB" min="25" max="95" step="1" value="59"><output id="wBV">59°</output></label>
+        <div class="presets"><button class="btn sm" id="wClose">翅膀收合（兩片 59°）</button><button class="btn sm" id="wOpen">翅膀攤開（小 35°／大 69°）</button></div>
+        <div class="tip" id="tip"></div>
+        <div class="read">
+          <div class="state" id="state">穩定平衡</div>
+          <div id="read0"></div>
+          <div id="read1"></div>
+          <div id="read2"></div>
+        </div>
+        <div class="presets">
+          <button class="btn sm" data-p="0,1,0,1">原設計 2＋4</button>
+          <button class="btn sm" data-p="1,1,1,0">1＋2＋3</button>
+          <button class="btn sm" data-p="1,2,2,1">全部掛滿</button>
+          <button class="btn sm" data-p="0,0,0,0">清空</button>
+        </div>
+      </div>
+    </section>
+    <nav class="steps">
+      <button class="btn" id="prev">上一步</button>
+      <button class="btn" id="again" title="重播這一步">重播</button>
+      <button class="btn pri" id="next">下一步</button>
+    </nav>
+    <div class="note">點零件名稱可在畫面中找到它；實驗步驟也可以直接點嘴巴上的 1～4 號圈圈。禮物片和魚片面積一樣，所以一樣重：鵜鶘也能當「送子鳥」叼禮物（傳說裡的送子鳥其實是白鸛）。<br>CC BY-NC-SA 4.0 · 何政學／學思創客 XUESI MAKER</div>
+  </aside>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(()=>{
+const G={"T":0.3,"shapes":{"main":{"rings":[{"o":[[-0.4681,-0.1664],[-0.4854,-0.143],[-0.49,-0.12],[-0.49,0.3576],[-0.6979,0.3501],[-0.8053,0.3359],[-0.8843,0.3116],[-0.9378,0.2787],[-0.9763,0.2351],[-1.0608,0.0648],[-1.1948,-0.1627],[-1.4397,-0.6858],[-1.7618,-1.3049],[-1.8381,-1.4401],[-1.919,-1.569],[-2.0072,-1.6912],[-2.1024,-1.8025],[-2.3084,-2.0038],[-2.5415,-2.192],[-2.6733,-2.2815],[-2.8082,-2.3616],[-2.9455,-2.4322],[-3.0976,-2.499],[-3.4356,-2.6189],[-3.6236,-2.6731],[-3.8148,-2.7192],[-4.0056,-2.7558],[-4.2093,-2.7838],[-4.4008,-2.7985],[-4.5962,-2.8],[-4.7933,-2.7865],[-4.9949,-2.759],[-5.1991,-2.7193],[-5.4043,-2.6692],[-5.8131,-2.544],[-6.1975,-2.401],[-6.3889,-2.3148],[-6.5708,-2.2176],[-6.7473,-2.1124],[-7.2694,-1.7808],[-7.4347,-1.6843],[-7.5989,-1.6006],[-7.9194,-1.4623],[-8.2243,-1.3503],[-8.3742,-1.3029],[-8.6619,-1.2279],[-8.8024,-1.1998],[-8.9407,-1.1853],[-9.0962,-1.1861],[-9.6397,-1.2325],[-9.7222,-1.2272],[-9.7537,-1.2196],[-9.7969,-1.1964],[-9.8217,-1.1649],[-9.8321,-1.1275],[-9.8336,-1.0827],[-9.8199,-1.0193],[-9.7839,-0.9312],[-9.7311,-0.8416],[-9.6651,-0.7543],[-9.5888,-0.6739],[-9.4998,-0.6002],[-9.3974,-0.5394],[-9.2917,-0.4921],[-9.1573,-0.4435],[-8.5583,-0.2585],[-8.4009,-0.2003],[-8.076,-0.0618],[-7.5523,0.1738],[-7.1878,0.3279],[-6.9989,0.4004],[-6.6134,0.5346],[-6.0092,0.7241],[-5.3989,0.9003],[-4.9891,0.9998],[-4.3628,1.1326],[-4.1659,1.181],[-3.9746,1.2369],[-3.7988,1.3005],[-3.4772,1.4427],[-3.33,1.518],[-3.1888,1.5993],[-3.0526,1.6887],[-2.9267,1.784],[-2.8088,1.8879],[-2.6986,2.0018],[-2.5997,2.1243],[-2.5065,2.2634],[-2.4215,2.4121],[-2.3443,2.5677],[-2.2741,2.7272],[-2.1523,3.0471],[-2.0996,3.2016],[-2.0582,3.355],[-2.0311,3.5109],[-1.9692,4.1246],[-1.9425,4.2635],[-1.898,4.4046],[-1.7889,4.6394],[-1.72,4.7585],[-1.6477,4.8655],[-1.5745,4.9582],[-1.4908,5.0481],[-1.4009,5.1279],[-1.3048,5.1966],[-1.1885,5.2598],[-1.0715,5.3076],[-0.9461,5.3462],[-0.8222,5.3742],[-0.6818,5.3956],[-0.5488,5.4063],[-0.4192,5.4076],[-0.3053,5.4003],[-0.1846,5.3803],[-0.0602,5.3457],[0.0698,5.297],[0.3016,5.1847],[0.5703,5.0194],[0.6018,4.9738],[0.6062,4.926],[0.5939,4.8906],[0.5172,4.7833],[0.2627,4.5061],[0.2056,4.399],[0.2719,4.3462],[0.5199,4.3723],[1.0015,4.5005],[1.8142,4.7716],[2.9459,5.1804],[4.2913,5.682],[8.5442,7.2913],[9.6817,7.7125],[10.4983,7.9994],[10.9933,8.1538],[11.1055,8.1761],[11.1523,8.1609],[11.1809,8.1337],[11.1984,8.0877],[11.1973,8.058],[11.1876,8.0299],[11.17,8.0059],[11.023,7.8694],[11.0001,7.8],[11.0303,7.7336],[11.0622,7.5917],[11.0684,7.5049],[11.0654,7.4085],[11.119,7.2145],[11.118,7.1791],[11.1067,7.1455],[11.0861,7.1167],[11.0558,7.0939],[10.4559,6.7938],[1.0452,3.1888],[1.0013,3.1801],[0.9517,3.1883],[0.7249,3.0862],[0.472,2.9542],[0.388,2.8844],[0.3975,2.8542],[0.3956,2.8153],[0.379,2.7801],[0.3501,2.7539],[0.3135,2.7407],[0.11,2.7087],[0.0063,2.6813],[0.0454,2.6544],[0.2887,2.6276],[0.9494,2.592],[0.9903,2.5663],[1.0143,2.5246],[1.0176,2.486],[1.0001,2.4001],[2.34,2.4],[2.34,2.15],[2.66,2.15],[2.66,2.4],[4.84,2.4],[4.84,2.15],[5.16,2.15],[5.16,2.4],[7.34,2.4],[7.34,2.15],[7.66,2.15],[7.66,2.4],[9.84,2.4],[9.84,2.15],[10.16,2.15],[10.16,2.4],[11.4,2.3997],[11.8971,2.3246],[12.0658,2.2617],[12.099,2.241],[12.1173,2.2179],[12.128,2.1905],[12.127,2.1417],[12.103,2.0992],[12.033,2.0381],[11.8093,1.9128],[11.5611,1.7845],[11.339,1.6471],[11.2016,1.5017],[11.0256,1.1707],[10.9195,0.9871],[10.6698,0.5977],[10.5262,0.3978],[10.3702,0.1982],[10.2009,0.0011],[9.8196,-0.4125],[9.6089,-0.6288],[9.3861,-0.845],[9.1558,-1.0527],[8.9132,-1.2521],[8.662,-1.4355],[8.3972,-1.6015],[8.1266,-1.7475],[7.8443,-1.8834],[7.5461,-2.0104],[7.2398,-2.1241],[6.9237,-2.2237],[6.617,-2.3024],[6.3075,-2.3622],[5.9959,-2.4002],[5.6914,-2.4121],[5.3803,-2.4004],[5.0665,-2.3682],[4.7587,-2.3191],[4.4509,-2.2545],[4.1528,-2.1779],[3.8647,-2.0911],[3.603,-2.001],[3.3528,-1.8972],[3.1123,-1.7745],[2.8827,-1.6379],[2.6642,-1.4917],[2.4566,-1.3404],[1.8978,-0.8981],[1.7496,-0.7642],[1.6172,-0.6167],[1.2893,-0.1808],[1.1779,-0.054],[1.0489,0.0597],[0.898,0.1508],[0.7177,0.2202],[0.49,0.2768],[0.4897,-0.1259],[0.4724,-0.1624],[0.453,-0.1754],[0.43,-0.18],[0.2983,-0.1788],[0.2767,-0.1699],[0.2571,-0.1483],[0.25,-0.12],[0.2499,0.1442],[0.03,0.0173],[0.0029,0.0093],[-0.03,0.0173],[-0.2499,0.1442],[-0.25,-0.12],[-0.2601,-0.1533],[-0.2767,-0.1699],[-0.3041,-0.1797],[-0.4359,-0.1797]],"h":[[[-2.501,-1.3804],[-2.5236,-1.3057],[-2.5731,-1.2454],[-2.6419,-1.2086],[-2.7196,-1.201],[-2.7943,-1.2236],[-2.8546,-1.2731],[-2.8914,-1.3419],[-2.899,-1.4196],[-2.8764,-1.4943],[-2.8269,-1.5546],[-2.7581,-1.5914],[-2.6804,-1.599],[-2.6057,-1.5764],[-2.5454,-1.5269],[-2.5086,-1.4581]],[[-0.2403,4.4105],[-0.2565,4.4708],[-0.2945,4.5203],[-0.3486,4.5515],[-0.4105,4.5597],[-0.4708,4.5435],[-0.5203,4.5055],[-0.5515,4.4514],[-0.5597,4.3895],[-0.5435,4.3292],[-0.5055,4.2797],[-0.4514,4.2485],[-0.3895,4.2403],[-0.3292,4.2565],[-0.2797,4.2945],[-0.2485,4.3486]]]}],"area":88.85241417100917,"c":[2.115825527408812,1.2335485180159265]},"wingA":{"rings":[{"o":[[3.85,-1.575],[2.9734,-1.5858],[2.5281,-1.5783],[2.0938,-1.5592],[1.682,-1.5264],[1.3047,-1.4775],[0.9734,-1.4105],[0.7,-1.323],[0.4857,-1.2089],[0.3199,-1.0676],[0.1965,-0.9053],[0.1094,-0.7284],[0.0523,-0.5432],[0.0191,-0.3559],[0.0038,-0.1727],[0.0007,0.1727],[0.0086,0.3559],[0.0325,0.5432],[0.0813,0.7284],[0.1636,0.9053],[0.2883,1.0676],[0.4642,1.2089],[0.7,1.323],[1.0112,1.4118],[1.3961,1.482],[1.8376,1.5347],[2.3188,1.5711],[2.8226,1.5922],[3.332,1.5991],[3.8302,1.593],[4.3,1.575],[4.7623,1.5406],[5.2422,1.4869],[5.7291,1.4172],[6.2125,1.3348],[6.6818,1.2431],[7.1266,1.1453],[7.5361,1.0449],[7.9,0.945],[8.5715,0.7353],[8.8848,0.622],[9.1656,0.504],[9.4007,0.3821],[9.577,0.2569],[9.6811,0.1293],[9.7,0.0],[9.6218,-0.1374],[9.4539,-0.2865],[9.2122,-0.4419],[8.9125,-0.5985],[8.5706,-0.7512],[8.2023,-0.8948],[7.8235,-1.0241],[7.45,-1.134],[7.0615,-1.227],[6.6344,-1.3092],[6.1791,-1.3806],[5.7062,-1.4411],[5.2264,-1.4908],[4.75,-1.5297],[4.2877,-1.5578]],"h":[[[0.8998,0.0098],[0.8808,0.0855],[0.8343,0.1482],[0.7674,0.1883],[0.6902,0.1998],[0.6145,0.1808],[0.5518,0.1343],[0.5117,0.0674],[0.5002,-0.0098],[0.5192,-0.0855],[0.5657,-0.1482],[0.6326,-0.1883],[0.7098,-0.1998],[0.7855,-0.1808],[0.8482,-0.1343],[0.8883,-0.0674]]]}],"area":24.257792512388804,"c":[4.33996949107838,-0.00416926722150412]},"wingB":{"rings":[{"o":[[2.8753,-1.3074],[2.1687,-1.3027],[1.8237,-1.287],[1.4959,-1.2599],[1.1936,-1.2196],[0.9254,-1.1642],[0.7,-1.092],[0.5158,-0.9978],[0.3642,-0.8812],[0.2427,-0.7472],[0.1487,-0.6012],[0.08,-0.4483],[0.0339,-0.2937],[0.0081,-0.1425],[0.0,0.0],[0.0056,0.1425],[0.0255,0.2937],[0.0642,0.4483],[0.1263,0.6013],[0.2163,0.7472],[0.3389,0.8812],[0.4986,0.9978],[0.7,1.092],[0.9557,1.1653],[1.2667,1.2232],[1.6203,1.2667],[2.0038,1.2967],[2.4042,1.3142],[2.8089,1.3199],[3.2051,1.3149],[3.58,1.3],[3.9498,1.2716],[4.3338,1.2273],[4.7233,1.1697],[5.11,1.1018],[5.4855,1.026],[5.8413,0.9453],[6.1689,0.8624],[6.46,0.78],[6.9972,0.6069],[7.2479,0.5134],[7.4725,0.416],[7.6606,0.3154],[7.8016,0.2121],[7.8849,0.1067],[7.9,0.0],[7.8374,-0.1134],[7.7031,-0.2364],[7.5098,-0.3647],[7.27,-0.494],[6.9965,-0.62],[6.7019,-0.7386],[6.3988,-0.8453],[6.1,-0.936],[5.7892,-1.0128],[5.4475,-1.0806],[5.0833,-1.1395],[4.705,-1.1895],[4.3211,-1.2305],[3.94,-1.2626],[3.5702,-1.2858]],"h":[[[0.8998,0.0098],[0.8808,0.0855],[0.8343,0.1482],[0.7674,0.1883],[0.6902,0.1998],[0.6145,0.1808],[0.5518,0.1343],[0.5117,0.0674],[0.5002,-0.0098],[0.5192,-0.0855],[0.5657,-0.1482],[0.6326,-0.1883],[0.7098,-0.1998],[0.7855,-0.1808],[0.8482,-0.1343],[0.8883,-0.0674]]]}],"area":16.149563399229624,"c":[3.581922830814135,-0.003420106973808563]},"fish":{"rings":[{"o":[[-0.36,0.72],[-0.135,0.72],[-0.135,0.12],[0.135,0.12],[0.135,0.72],[0.36,0.72],[0.36,-0.401],[0.48,-0.42],[0.6195,-0.4512],[0.7519,-0.4912],[0.8759,-0.5388],[0.99,-0.5925],[1.0929,-0.6509],[1.1831,-0.7125],[1.2593,-0.776],[1.32,-0.84],[1.3659,-0.9072],[1.4038,-0.9999],[2.16,-0.48],[1.98,-1.14],[2.16,-1.8],[1.4025,-1.2792],[1.3659,-1.3695],[1.32,-1.44],[1.2593,-1.509],[1.1831,-1.5797],[1.0929,-1.6499],[0.99,-1.7175],[0.8759,-1.7804],[0.7519,-1.8366],[0.6195,-1.8838],[0.48,-1.92],[0.1481,-1.9734],[-0.0424,-1.9921],[-0.24,-2.0025],[-0.4376,-2.0026],[-0.6281,-1.9903],[-0.8046,-1.9635],[-0.96,-1.92],[-1.1052,-1.854],[-1.2516,-1.7648],[-1.3928,-1.6586],[-1.5225,-1.5413],[-1.6344,-1.4187],[-1.7222,-1.297],[-1.7795,-1.1821],[-1.8,-1.08],[-1.7795,-0.9844],[-1.7222,-0.8869],[-1.6344,-0.7903],[-1.5225,-0.6975],[-1.3928,-0.6112],[-1.2516,-0.5344],[-1.1052,-0.4697],[-0.96,-0.42],[-0.8046,-0.3855],[-0.6281,-0.3637],[-0.36,-0.3529]],"h":[[[-1.078,-1.0295],[-1.1067,-0.9867],[-1.1495,-0.958],[-1.2,-0.948],[-1.2505,-0.958],[-1.2933,-0.9867],[-1.322,-1.0295],[-1.332,-1.08],[-1.322,-1.1305],[-1.2933,-1.1733],[-1.2505,-1.202],[-1.2,-1.212],[-1.1495,-1.202],[-1.1067,-1.1733],[-1.078,-1.1305],[-1.068,-1.08]]]}],"area":5.209122790908858,"c":[0.037966706887049416,-1.0108727583417776]},"gift":{"rings":[{"o":[[-0.7465,-0.3488],[-0.7758,-0.3009],[-0.7941,-0.2565],[-0.8083,-0.196],[-0.8114,-0.148],[-0.8053,-0.0861],[-0.7929,-0.0398],[-0.7672,0.0169],[-0.7429,0.0537],[-0.7113,0.0898],[-0.6632,0.1293],[-0.6216,0.1533],[-0.5634,0.1752],[-0.5163,0.1845],[-0.4541,0.1866],[-0.3601,0.1672],[-0.36,0.66],[-0.3554,0.683],[-0.3424,0.7024],[-0.3059,0.7197],[-0.135,0.72],[-0.135,0.12],[0.135,0.12],[0.135,0.72],[0.3059,0.7197],[0.3381,0.7064],[0.3554,0.683],[0.36,0.66],[0.3601,0.1672],[0.4541,0.1866],[0.5163,0.1845],[0.5634,0.1752],[0.6216,0.1533],[0.6632,0.1293],[0.7113,0.0898],[0.7429,0.0537],[0.7758,0.0009],[0.7941,-0.0435],[0.8083,-0.104],[0.8114,-0.148],[0.8083,-0.196],[0.7941,-0.2565],[0.7758,-0.3009],[0.7457,-0.3499],[1.2105,-0.3503],[1.2427,-0.3636],[1.2621,-0.3926],[1.2646,-1.9423],[1.251,-1.9804],[1.2276,-1.9978],[1.2046,-2.0023],[-1.2046,-2.0023],[-1.2427,-1.9887],[-1.2575,-1.9706],[-1.2646,-1.9423],[-1.2621,-0.3926],[-1.2427,-0.3636],[-1.2105,-0.3503]],"h":[]}],"area":5.209122790899767,"c":[9.042034359742345e-17,-0.9370290122786825]},"bar":{"rings":[{"o":[[0.8207,0.071],[0.8081,0.0444],[0.7884,0.0227],[0.7445,0.0019],[0.51,0.0],[0.51,0.4],[0.24,0.4],[0.24,0.0],[0.18,0.0],[0.18,0.35],[-0.18,0.35],[-0.18,0.0],[-0.24,0.0],[-0.24,0.4],[-0.51,0.4],[-0.51,0.0],[-0.725,0.0],[-0.7633,0.0076],[-0.8023,0.0366],[-0.8174,0.0617],[-0.8245,0.0902],[-0.825,0.8],[-0.8174,0.8383],[-0.8023,0.8634],[-0.7806,0.8831],[-0.754,0.8957],[-0.725,0.9],[0.725,0.9],[0.7633,0.8924],[0.8023,0.8634],[0.8174,0.8383],[0.8245,0.8098],[0.825,0.1]],"h":[]}],"area":1.1343654849054599,"c":[-1.423676719283412e-17,0.528149415844919]},"pin":{"rings":[{"o":[[0.163,0.0],[-0.163,0.0],[-0.163,1.95],[-0.43,1.95],[-0.43,2.35],[0.43,2.35],[0.43,1.95],[0.163,1.95]],"h":[]}],"area":0.9797,"c":[-0.0,1.387575278146371]},"washer":{"rings":[{"o":[[0.4295,-0.0211],[0.4171,-0.1045],[0.3887,-0.1838],[0.3454,-0.2562],[0.2888,-0.3186],[0.2211,-0.3688],[0.1449,-0.4049],[0.0631,-0.4253],[-0.0211,-0.4295],[-0.1045,-0.4171],[-0.1838,-0.3887],[-0.2562,-0.3454],[-0.3186,-0.2888],[-0.3688,-0.2211],[-0.4049,-0.1449],[-0.4253,-0.0631],[-0.4295,0.0211],[-0.4171,0.1045],[-0.3887,0.1838],[-0.3454,0.2562],[-0.2888,0.3186],[-0.2211,0.3688],[-0.1449,0.4049],[-0.0631,0.4253],[0.0211,0.4295],[0.1045,0.4171],[0.1838,0.3887],[0.2562,0.3454],[0.3186,0.2888],[0.3688,0.2211],[0.4049,0.1449],[0.4253,0.0631]],"h":[[[0.12,0.12],[-0.12,0.12],[-0.12,-0.12],[0.12,-0.12]]]}],"area":0.5230472309209336,"c":[-1.5848789096806467e-17,9.834739662750441e-18]},"postA":{"rings":[{"o":[[-1.5,0.6],[-0.6,0.6],[-0.6,9.2],[-0.25,10.0],[-0.25,12.8],[-0.2,12.8],[-0.1948,12.8454],[-0.1794,12.8885],[-0.1546,12.9269],[-0.1165,12.9626],[-0.0454,12.9948],[0.0261,12.9983],[0.0825,12.9822],[0.1319,12.9504],[0.1587,12.9218],[0.1822,12.8825],[0.1948,12.8454],[0.2,12.8],[0.25,12.8],[0.25,10.0],[0.6,9.2],[0.6,0.6],[1.5,0.6],[1.5,0.0],[0.135,0.0],[0.135,5.0],[-0.135,5.0],[-0.135,0.0],[-1.5,0.0]],"h":[]}],"area":12.912820639017815,"c":[-9.391128679505477e-17,5.497877244352495]},"postB":{"rings":[{"o":[[-1.5,0.5],[-1.4924,0.5383],[-1.4707,0.5707],[-1.4383,0.5924],[-1.4098,0.5995],[-0.6001,0.6001],[-0.6,7.7],[-0.5957,7.729],[-0.5831,7.7556],[-0.5634,7.7773],[-0.5195,7.7981],[-0.135,7.8],[-0.135,5.0],[0.135,5.0],[0.135,7.8],[0.529,7.7957],[0.5634,7.7773],[0.5831,7.7556],[0.5957,7.729],[0.6,7.7],[0.6001,0.6001],[1.4,0.6],[1.429,0.5957],[1.4556,0.5831],[1.4882,0.5471],[1.4995,0.5098],[1.5,0.0],[-1.5,0.0]],"h":[]}],"area":9.675366049290053,"c":[1.0966790782517988e-16,3.3025653796831222]},"discL":{"rings":[{"o":[[4.4986,-0.1104],[4.4878,-0.331],[4.4662,-0.5508],[4.4337,-0.7693],[4.3907,-0.986],[4.337,-1.2002],[4.2729,-1.4116],[4.1985,-1.6195],[4.1139,-1.8236],[4.0195,-2.0233],[3.9154,-2.218],[3.8018,-2.4075],[3.6791,-2.5911],[3.5476,-2.7685],[3.4074,-2.9393],[3.2591,-3.1029],[3.1029,-3.2591],[2.9393,-3.4074],[2.7685,-3.5476],[2.5911,-3.6791],[2.4075,-3.8018],[2.218,-3.9154],[2.0233,-4.0195],[1.8236,-4.1139],[1.6195,-4.1985],[1.4116,-4.2729],[1.2002,-4.337],[0.986,-4.3907],[0.7693,-4.4337],[0.5508,-4.4662],[0.331,-4.4878],[0.1104,-4.4986],[-0.1104,-4.4986],[-0.331,-4.4878],[-0.5508,-4.4662],[-0.7693,-4.4337],[-0.986,-4.3907],[-1.2002,-4.337],[-1.4116,-4.2729],[-1.6195,-4.1985],[-1.8236,-4.1139],[-2.0233,-4.0195],[-2.218,-3.9154],[-2.4075,-3.8018],[-2.5911,-3.6791],[-2.7685,-3.5476],[-2.9393,-3.4074],[-3.1029,-3.2591],[-3.2591,-3.1029],[-3.4074,-2.9393],[-3.5476,-2.7685],[-3.6791,-2.5911],[-3.8018,-2.4075],[-3.9154,-2.218],[-4.0195,-2.0233],[-4.1139,-1.8236],[-4.1985,-1.6195],[-4.2729,-1.4116],[-4.337,-1.2002],[-4.3907,-0.986],[-4.4337,-0.7693],[-4.4662,-0.5508],[-4.4878,-0.331],[-4.4986,-0.1104],[-4.4986,0.1104],[-4.4878,0.331],[-4.4662,0.5508],[-4.4337,0.7693],[-4.3907,0.986],[-4.337,1.2002],[-4.2729,1.4116],[-4.1985,1.6195],[-4.1139,1.8236],[-4.0195,2.0233],[-3.9154,2.218],[-3.8018,2.4075],[-3.6791,2.5911],[-3.5476,2.7685],[-3.4074,2.9393],[-3.2591,3.1029],[-3.1029,3.2591],[-2.9393,3.4074],[-2.7685,3.5476],[-2.5911,3.6791],[-2.4075,3.8018],[-2.218,3.9154],[-2.0233,4.0195],[-1.8236,4.1139],[-1.6195,4.1985],[-1.4116,4.2729],[-1.2002,4.337],[-0.986,4.3907],[-0.7693,4.4337],[-0.5508,4.4662],[-0.331,4.4878],[-0.1104,4.4986],[0.1104,4.4986],[0.331,4.4878],[0.5508,4.4662],[0.7693,4.4337],[0.986,4.3907],[1.2002,4.337],[1.4116,4.2729],[1.6195,4.1985],[1.8236,4.1139],[2.0233,4.0195],[2.218,3.9154],[2.4075,3.8018],[2.5911,3.6791],[2.7685,3.5476],[2.9393,3.4074],[3.1029,3.2591],[3.2591,3.1029],[3.4074,2.9393],[3.5476,2.7685],[3.6791,2.5911],[3.8018,2.4075],[3.9154,2.218],[4.0195,2.0233],[4.1139,1.8236],[4.1985,1.6195],[4.2729,1.4116],[4.337,1.2002],[4.3907,0.986],[4.4337,0.7693],[4.4662,0.5508],[4.4878,0.331],[4.4986,0.1104]],"h":[[[0.135,0.135],[0.135,1.485],[-0.135,1.485],[-0.135,0.135],[-1.485,0.135],[-1.485,-0.135],[-0.135,-0.135],[-0.135,-1.485],[0.135,-1.485],[0.135,-0.135],[1.485,-0.135],[1.485,0.135]]]}],"area":62.07996433138864,"c":[7.142057375347479e-17,-5.780030407933456e-16]},"discS":{"rings":[{"o":[[2.9991,-0.0736],[2.9774,-0.3672],[2.9271,-0.6573],[2.8486,-0.941],[2.7426,-1.2157],[2.6103,-1.4787],[2.4528,-1.7274],[2.2716,-1.9595],[2.0686,-2.1727],[1.8457,-2.365],[1.605,-2.5346],[1.3488,-2.6797],[1.0797,-2.799],[0.8001,-2.8913],[0.5129,-2.9558],[0.2207,-2.9919],[-0.0736,-2.9991],[-0.3672,-2.9774],[-0.6573,-2.9271],[-0.941,-2.8486],[-1.2157,-2.7426],[-1.4787,-2.6103],[-1.7274,-2.4528],[-1.9595,-2.2716],[-2.1727,-2.0686],[-2.365,-1.8457],[-2.5346,-1.605],[-2.6797,-1.3488],[-2.799,-1.0797],[-2.8913,-0.8001],[-2.9558,-0.5129],[-2.9919,-0.2207],[-2.9991,0.0736],[-2.9774,0.3672],[-2.9271,0.6573],[-2.8486,0.941],[-2.7426,1.2157],[-2.6103,1.4787],[-2.4528,1.7274],[-2.2716,1.9595],[-2.0686,2.1727],[-1.8457,2.365],[-1.605,2.5346],[-1.3488,2.6797],[-1.0797,2.799],[-0.8001,2.8913],[-0.5129,2.9558],[-0.2207,2.9919],[0.0736,2.9991],[0.3672,2.9774],[0.6573,2.9271],[0.941,2.8486],[1.2157,2.7426],[1.4787,2.6103],[1.7274,2.4528],[1.9595,2.2716],[2.1727,2.0686],[2.365,1.8457],[2.5346,1.605],[2.6797,1.3488],[2.799,1.0797],[2.8913,0.8001],[2.9558,0.5129],[2.9919,0.2207]],"h":[[[0.135,0.135],[0.135,1.485],[-0.135,1.485],[-0.135,0.135],[-1.485,0.135],[-1.485,-0.135],[-0.135,-0.135],[-0.135,-1.485],[0.135,-1.485],[0.135,-0.135],[1.485,-0.135],[1.485,0.135]]]}],"area":26.74059525839495,"c":[1.842303653676803e-16,-1.2634837317163267e-16]}},"WAo":0.7,"WBo":0.7,"SHOULDER":[-2.7,-1.4],"NOTCH_Y":[2.5,5.0,7.5,10.0],"RIM_Z":2.4,"ZF":2.08,"ZC":1.8,"FISH_X":0.375,"WING0":59.03340677102982,"TOP":13.0,"layout":{"main":[0,100.3428148239261,29.99975202361059],"discL":[0,47.0,109.0],"discS":[0,248.0,32.0],"wingAR":[270,281.85828125,137.0],"wingAL":[270,229.991171875,157.0],"wingBR":[270,111.089375,157.0],"wingBL":[90,139.089375,90.0],"postA":[180,255.0,194.0],"postB":[180,161.0,176.0],"fish0L":[270,22.026171875,53.599999999999994],"fish0R":[0,176.0,76.026171875],"fish1L":[90,177.2,124.0],"fish1R":[90,77.2,154.0],"fish2L":[90,193.2,156.0],"fish2R":[90,271.2,158.0],"fish3L":[270,22.026171875,167.6],"fish3R":[90,51.2,172.0],"gift0L":[180,120.64634476038736,165.2],"gift0R":[90,221.2,172.64634476038736],"gift1L":[180,186.64634476038736,177.2],"gift1R":[180,34.646344760387365,179.2],"bar0":[0,10.25,2.0],"bar1":[0,90.25,2.0],"bar2":[0,110.25,2.0],"bar3":[0,190.25,2.0],"bar4":[0,210.25,2.0],"bar5":[0,280.25,2.0],"pinL":[0,292.3,2.0],"pinR":[90,111.5,18.3],"washerL":[0,126.3,6.3],"washerR":[0,200.3,18.3]},"x0":2.0,"y1":199.22337920394665,"W":302,"H":204,"fishArea":11.552611066723175,"pinArea":1.5027472309209335,"FZ":1.192752220537834};
+const V3=THREE.Vector3,V2=THREE.Vector2,Q=THREE.Quaternion,M4=THREE.Matrix4,T=G.T,D=Math.PI/180;
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)), ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const one=new V3(1,1,1),QI=new Q();
+const qX=a=>new Q().setFromAxisAngle(new V3(1,0,0),a),qY=a=>new Q().setFromAxisAngle(new V3(0,1,0),a),qZ=a=>new Q().setFromAxisAngle(new V3(0,0,1),a);
+const M=(x,y,z,q)=>new M4().compose(new V3(x,y,z),q||QI,one);
+// 世界座標：y 往上、z＝鵜鶘前方、x＝左右。鳥座標原點＝下巴支點
+const QV=qY(-Math.PI/2);          // 直立板：形狀 x→前、y→上（和鵜鶘身體同一平面）
+const QFLAT=qX(-Math.PI/2);       // 平放：形狀平面朝上
+const SH=G.SHOULDER, NY=G.NOTCH_Y, TOP=G.TOP, LIM=25;
+
+/* ---------- 形狀 ---------- */
+function shp(name){return G.shapes[name].rings.map(r=>{const s=new THREE.Shape(r.o.map(p=>new V2(p[0],p[1])));
+  r.h.forEach(h=>s.holes.push(new THREE.Path(h.map(p=>new V2(p[0],p[1])))));return s})}
+function ext(name,seg){const g=new THREE.ExtrudeGeometry(shp(name),{depth:T,bevelEnabled:false,curveSegments:seg||12});g.translate(0,0,-T/2);g.computeVertexNormals();return g}
+const GEO={};['main','wingA','wingB','fish','gift','bar','pin','washer','postA','postB','discL','discS'].forEach(n=>GEO[n]=ext(n));
+
+/* ---------- 板材上的位置（和雷切檔同一個排版） ---------- */
+const OX=-G.W/20, OZ=-30-G.H/20, Y=.45;
+const MIRROR={wingAL:1,wingBL:1};
+function onSheet(name){
+  const [r,dx,dy]=G.layout[name], m=MIRROR[name]?-1:1, c=Math.cos(r*D), s=Math.sin(r*D);
+  const mt=new M4().makeBasis(new V3(c,0,-s),new V3(-s*m,0,-c*m),new V3(0,m,0));
+  mt.setPosition((dx+3-G.x0)/10+OX,Y,(-dy+G.y1+3)/10+OZ);return mt}
+
+/* ---------- 場景 ---------- */
+const stageEl=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stageEl.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(38,1,.1,500);
+scene.add(new THREE.HemisphereLight(0xf2f4ff,0x8c7a62,.8));
+const sun=new THREE.DirectionalLight(0xffffff,.8);sun.position.set(18,40,14);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-45,right:45,top:45,bottom:-45,near:1,far:130});sun.shadow.bias=-.0006;scene.add(sun);
+const fill=new THREE.DirectionalLight(0xdfe9ff,.35);fill.position.set(-20,12,-8);scene.add(fill);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.ShadowMaterial({opacity:.28}));
+ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+const sheet=new THREE.Mesh(new THREE.BoxGeometry(G.W/10,.3,G.H/10),new THREE.MeshStandardMaterial({color:0xe6d6b8,roughness:.9}));
+sheet.position.set(OX+G.W/20,.15,OZ+G.H/20);sheet.receiveShadow=true;scene.add(sheet);
+
+/* ---------- 零件 ---------- */
+const parts=[];
+const FR={stand:new M4(),pillar:new M4(),bird:new M4(),h:[0,1,2,3,4,5].map(()=>new M4())};
+function add(group,gname,frame,local,flatName,stage,delay,tint,hlAt,hi){
+  const fc=new THREE.Color(tint||0xd9b98a).lerp(new THREE.Color(0xf2e8d2),group==='fish'||group==='gift'?.15:.55);
+  const face=new THREE.MeshStandardMaterial({color:fc,roughness:.82,transparent:true,emissive:0xcf3348,emissiveIntensity:0});
+  const edge=new THREE.MeshStandardMaterial({color:0x2a1a10,roughness:.95,transparent:true,emissive:0xcf3348,emissiveIntensity:0});
+  const mesh=new THREE.Mesh(GEO[gname],[face,edge]);mesh.castShadow=mesh.receiveShadow=true;scene.add(mesh);
+  const flat=onSheet(flatName);
+  const p={group,mesh,face,edge,frame,hi,local,flat,stage,delay,hlAt:hlAt||[stage],tp:new V3(),tq:new Q(),op:1,glow:0};
+  flat.decompose(mesh.position,mesh.quaternion,new V3());parts.push(p);return p}
+const frameOf=p=>p.frame==='h'?FR.h[p.hi]:FR[p.frame];
+// 底座＋支柱（和第一款相同）
+add('discL','discL','stand',M(0,.15,0,QFLAT),'discL',1,0,0xd6b584,[1,3]);
+add('discS','discS','stand',M(0,.45,0,QFLAT),'discS',1,.3,0xdcbd8f,[1,3]);
+add('post','postB','pillar',M(0,0,0,QV),'postB',2,0,0xd8b688,[2,3,6]);
+const PIL_A=add('post','postA','pillar',M(0,0,0),'postA',2,.3,0xd4b080,[2,3,6]);PIL_A.app=new V3(0,7,0);PIL_A.win=.7;
+// 鵜鶘本體
+add('main','main','bird',M(0,0,0,QV),'main',5,0,0xdcbe90,[5,6]);
+const WINGS=[['wingB','wingBL',-.3,.1],['wingB','wingBR',.3,.17],['wingA','wingAL',-.6,.24],['wingA','wingAR',.6,.31]].map(([g,n,x,d])=>{
+  const p=add(g,g,'bird',new M4(),n,5,d,g==='wingA'?0xc9a674:0xd2b183,[5]);p.wx=x;p.big=g==='wingA';p.off=p.big?G.WAo:G.WBo;return p});
+// 插銷頭在 -x 側，穿過 5 層板，另一端壓上墊片；另一組留在板上當備用
+const PINQ=new Q().setFromRotationMatrix(new M4().makeBasis(new V3(0,0,1),new V3(-1,0,0),new V3(0,-1,0)));
+const PIN=add('pin','pin','bird',M(1.2,SH[1],SH[0],PINQ),'pinL',5,.38,0xd0ad7c,[5]);PIN.app=new V3(-3,0,0);PIN.win=.55;
+const WAS=add('washer','washer','bird',M(.9,SH[1],SH[0],QV),'washerL',5,.45,0xd0ad7c,[5]);WAS.app=new V3(2.2,0,0);WAS.win=.55;
+add('pin','pin','stand',null,'pinR',99,0,0xd0ad7c);add('washer','washer','stand',null,'washerR',99,0,0xd0ad7c);
+// H 形魚 ×4、禮物 ×2：兩片外形夾住一根橫桿。H 座標原點＝橫桿底部中央
+const ITEMS=[];
+for(let i=0;i<6;i++){
+  const kind=i<4?'fish':'gift', n=kind+(i<4?i:i-4), d=.06*i, tint=kind==='fish'?0x8fc0e6:0xee9aa6;
+  const zf=G.ZF-G.ZC;
+  ITEMS.push({kind,parts:[
+    add(kind,kind,'h',M(-G.FISH_X,zf,0,QV),n+'L',4,d,tint,[4,7],i),
+    add(kind,kind,'h',M(G.FISH_X,zf,0,QV),n+'R',4,d+.03,tint,[4,7],i),
+    add('bar','bar','h',M(0,0,0),'bar'+i,4,d+.06,0xd8b688,[4,7],i)]});
+}
+
+/* ---------- 物理：面積＝質量（3 mm 同一塊板） ---------- */
+const cfg={slot:[null,'fish',null,'fish'],wA:Math.round(G.WING0),wB:Math.round(G.WING0)};
+const S=G.shapes;
+function wingPos(sh,off,ang){const a=(180+ang)*D,cx=sh.c[0]-off,cy=sh.c[1];return[SH[0]+cx*Math.cos(a)-cy*Math.sin(a),SH[1]+cx*Math.sin(a)+cy*Math.cos(a)]}
+function itemCom(kind){const P=S[kind],B=S.bar,a=2*P.area+B.area;return{a,y:2*P.area*P.c[0]/a,z:(2*P.area*(G.ZF+P.c[1])+B.area*(G.ZC+B.c[1]))/a}}
+function com(slots,wA,wB){
+  const it=[[S.main.area,S.main.c[0],S.main.c[1]]];
+  [[S.wingA,G.WAo,wA],[S.wingB,G.WBo,wB]].forEach(([sh,off,ang])=>{const[y,z]=wingPos(sh,off,ang);it.push([sh.area*2,y,z])});
+  it.push([S.pin.area+S.washer.area,SH[0],SH[1]]);
+  slots.forEach((k,i)=>{if(!k)return;const c=itemCom(k);it.push([c.a,NY[i]+c.y,c.z])});
+  let m=0,y=0,z=0;it.forEach(([a,yy,zz])=>{m+=a;y+=a*yy;z+=a*zz});return{m,y:y/m,z:z/m}}
+let C={},eqT=0,cur=0,stuck=false,fallen=false;
+function updateEq(){
+  const slots=step>=7?cfg.slot:[null,null,null,null];
+  C=com(slots,cfg.wA,cfg.wB);
+  fallen=C.z>=0;                                   // 重心跑到支點上方：不穩定
+  eqT=Math.atan2(C.y,-C.z);stuck=Math.abs(eqT)>LIM*D;
+  if(fallen)eqT=Math.sign(C.y||1)*LIM*D;
+}
+
+/* ---------- 步驟資料 ---------- */
+const GROUPS={main:['鵜鶘身體',1],wingA:['大翅膀',2],wingB:['小翅膀',2],fish:['魚片',8],gift:['禮物片',4],bar:['橫桿',6],post:['支柱',2],discL:['大圓盤',1],discS:['小圓盤',1],pin:['T形插銷',2],washer:['方孔墊片',2]};
+const STEPS=[
+ {t:'認識零件',g:['main','wingA','wingB','fish','gift','bar','post','discL','discS','pin','washer'],
+  e:'這一張木板切出 31 片零件：鵜鶘身體、大翅膀和小翅膀各 2 片、魚片 8 片、禮物片 4 片、橫桿 6 根，還有支柱、圓盤、插銷和墊片。數一數有沒有少！',
+  j:'第二款把支點改到下巴（喉囊最低點），嘴巴張開，下喙上緣有 4 個凹槽，刻著 1～4。魚和禮物都做成 H 形：兩片外形加一根橫桿，橫桿跨在凹槽上。四片翅膀垂在身體後下方，是把重心拉到支點下方的主要配重。全部是同一塊 3 mm 板，所以面積越大就越重，不需要任何五金。',
+  cam:[0,0,-29,0,1.15,54]},
+ {t:'疊好底座',g:['discL','discS'],
+  e:'大圓盤放下面，小圓盤疊在上面，中間的十字孔要對齊。',
+  j:'兩層圓盤加大接觸面，也讓重量集中在下方，底座比較不會翻倒。十字孔必須上下對齊，支柱才插得下去。',
+  cam:[0,.6,0,.5,.6,22]},
+ {t:'支柱十字對插',g:['post'],
+  e:'兩根支柱長得不一樣：短的那根縫開在上面，長的那根縫開在下面。先拿好短的，再把長的從上往下套進去，變成十字形。',
+  j:'這是「十字交叉接合」：一根從頂端開槽，另一根從底部開槽，兩槽互相咬合。太緊或太鬆，通常是板厚誤差或雷射切縫（kerf）造成的。',
+  cam:[0,9,0,.75,.28,32]},
+ {t:'支柱插進底座',g:['post','discL','discS'],
+  e:'把十字支柱的腳對準圓盤的十字孔，往下壓到底。',
+  j:'支柱底部的凸榫穿過兩層 3 mm 圓盤，肩部卡在圓盤上。十字結構讓支柱前後、左右都不會晃。長支柱頂端就是鵜鶘下巴要坐的支點。',
+  cam:[0,6,0,.5,.24,28]},
+ {t:'組 H 形魚和禮物',g:['fish','gift','bar'],
+  e:'每一條魚要 2 片魚片和 1 根橫桿：橫桿兩邊的縫，插進兩片魚片頭上的插舌，變成 H 形。禮物也一樣。一共做 4 條魚、2 個禮物。',
+  j:'橫桿兩側的槽寬 2.7 mm（雷射切縫後約 3.0 mm，緊配），插好後兩片魚片相隔 4.5 mm，剛好跨過 3 mm 的嘴巴板。橫桿中央的缺口比嘴巴板寬，所以 H 魚可以輕鬆放上、拿下。禮物片的面積做得和魚片一樣，一個禮物和一條魚一樣重。',
+  cam:[-9,1.6,4,-1.2,.55,29]},
+ {t:'裝上翅膀',g:['main','wingA','wingB','pin','washer'],
+  e:'順序是：大翅膀、小翅膀、身體、小翅膀、大翅膀，五片的圓孔對齊。T 形插銷從一邊穿過去，另一邊把方孔墊片壓進去卡緊。翅膀要往後下方垂，大約 60°。',
+  j:'插銷穿過 5 層板（15 mm），再壓上方孔墊片（方孔 2.4 mm，比插銷窄，靠摩擦鎖住）。翅膀可以繞插銷轉動，轉的角度會改變重心的前後位置，是平衡的「微調旋鈕」。原設計往後下垂約 59°，四片翅膀把整隻鳥的重心拉到下巴支點下方約 11 mm。另一組插銷和墊片是備用。',
+  cam:[0,15,0,1.15,.22,46]},
+ {t:'放上支柱',g:['main','post'],
+  e:'把下巴最低點放在長支柱頂端，下巴兩邊的小爪夾在支柱前後。還沒餵魚的鵜鶘會抬頭，抬到小爪頂住支柱才停。',
+  j:'沒有魚時，重心在支點後方，算出來要抬頭約 36°；但下巴的小爪大約 25° 就頂住支柱，所以會停在那裡。這時候它不是「平衡」，而是被卡住。下一步把魚放進嘴裡，讓重心回到支點正下方。',
+  cam:[0,9.5,1,1.3,.2,46]},
+ {t:'餵魚實驗',g:['fish','gift','main'],
+  e:'把魚或禮物放到嘴巴上的 1～4 號格子。試試看：哪些格子放魚，鵜鶘剛好水平？提示：把放了東西的格子號碼加起來！',
+  j:'每一格離支點 25 mm，越前面的格子力矩越大。因為每條魚（和禮物）一樣重，重心前後只看「放了東西的格數總和」：總和 6（2＋4 或 1＋2＋3）時重心正好在支點正下方，鵜鶘水平；每差 1 格約傾斜 8°。魚放越多，鵜鶘不會比較水平，但擺動會變慢。翅膀往下垂（角度變大），重心往前，鵜鶘低頭。大、小翅膀可以各轉各的：把小翅膀往後抬、大翅膀往下垂，就能「攤開」成扇形又保持水平。',
+  cam:[0,10,1,1.42,.14,44]}
+];
+
+/* ---------- 狀態 ---------- */
+let step=0,stepT=0,stepP=0,level='e',swingA=0,swingT=0,swingOn=false,selGroup=null,selT=0,showCom=false;
+const DUR=2.4;
+try{const s=localStorage.getItem('bb-level');if(s==='e'||s==='j')level=s}catch(e){}
+const cam={t:new V3(0,0,-29),yaw:0,pitch:1.1,dist:50},want={t:new V3(),yaw:0,pitch:1,dist:50};
+let aspect=1;
+function applyPreset(){const c=STEPS[step].cam;want.t.set(c[0],c[1],c[2]);want.yaw=c[3];want.pitch=c[4];want.dist=c[5]*(aspect<.9?1.5:1)}
+
+/* ---------- UI ---------- */
+const $=id=>document.getElementById(id);
+if(/\.html?$/i.test(location.pathname)||/github\.io$/i.test(location.hostname))$('kind').hidden=false;
+const dots=$('dots');
+STEPS.forEach((s,i)=>{const b=document.createElement('button');b.textContent=i+1;b.title=s.t;b.setAttribute('aria-label','步驟 '+(i+1)+' '+s.t);b.onclick=()=>setStep(i);dots.appendChild(b)});
+const slotsEl=$('slots');
+for(let i=0;i<4;i++){const d=document.createElement('div');d.className='slot';
+  d.innerHTML=`<span>第 ${i+1} 格</span><button data-v="">空</button><button data-v="fish">魚</button><button data-v="gift">禮物</button>`;
+  [...d.querySelectorAll('button')].forEach(b=>b.onclick=()=>setSlot(i,b.dataset.v||null));slotsEl.appendChild(d)}
+const count=k=>cfg.slot.filter(v=>v===k).length;
+function setSlot(i,v){if(v==='gift'&&cfg.slot[i]!=='gift'&&count('gift')>=2)return;cfg.slot[i]=v;changed()}
+function cycleSlot(i){const order=[null,'fish','gift'];let k=order.indexOf(cfg.slot[i]);
+  for(let n=0;n<3;n++){k=(k+1)%3;if(order[k]!=='gift'||count('gift')<2||cfg.slot[i]==='gift'){cfg.slot[i]=order[k];break}}changed()}
+for(let i=0;i<4;i++)$('nt'+i).onclick=()=>cycleSlot(i);
+document.querySelectorAll('.presets button').forEach(b=>b.onclick=()=>{cfg.slot=b.dataset.p.split(',').map(v=>[null,'fish','gift'][+v]);changed()});
+function setWings(a,b){cfg.wA=a;cfg.wB=b;$('wA').value=a;$('wB').value=b;changed()}
+$('wA').oninput=e=>{cfg.wA=+e.target.value;changed()};
+$('wB').oninput=e=>{cfg.wB=+e.target.value;changed()};
+$('wClose').onclick=()=>setWings(Math.round(G.WING0),Math.round(G.WING0));
+$('wOpen').onclick=()=>setWings(69,35);
+
+function renderUI(){
+  const s=STEPS[step];
+  [...dots.children].forEach((b,i)=>{b.classList.toggle('on',i===step);b.classList.toggle('done',i<step)});
+  $('num').textContent='步驟 '+(step+1)+' / '+STEPS.length;
+  $('ttl').textContent=s.t;
+  $('txt').textContent=level==='e'?s.e:s.j;$('txt').className=level==='e'?'elem':'';
+  const ch=$('chips');ch.textContent='';
+  s.g.forEach(g=>{const b=document.createElement('button');b.textContent=GROUPS[g][0];const n=document.createElement('b');n.textContent='×'+GROUPS[g][1];b.appendChild(n);b.onclick=()=>{selGroup=g;selT=0};ch.appendChild(b)});
+  const last=step===STEPS.length-1;$('extra').hidden=!last;$('lab').hidden=!last;
+  $('prev').disabled=step===0;$('next').disabled=last;
+  $('lvE').setAttribute('aria-pressed',level==='e');$('lvJ').setAttribute('aria-pressed',level==='j');
+  $('com').setAttribute('aria-pressed',showCom);
+  const full=count('gift')>=2;
+  [...slotsEl.children].forEach((d,i)=>[...d.querySelectorAll('button')].forEach(b=>{const v=b.dataset.v||null;b.setAttribute('aria-pressed',cfg.slot[i]===v);b.disabled=v==='gift'&&full&&cfg.slot[i]!=='gift'}));
+  for(let i=0;i<4;i++){const e=$('nt'+i);e.className='nt'+(cfg.slot[i]?' '+cfg.slot[i]:'');e.setAttribute('aria-label','第 '+(i+1)+' 格：'+({fish:'魚',gift:'禮物'}[cfg.slot[i]]||'空'))}
+  readout();
+}
+function readout(){
+  const sum=cfg.slot.reduce((a,v,i)=>a+(v?i+1:0),0), deg=Math.abs(eqT/D), real=Math.abs(Math.atan2(C.y,-C.z)/D);
+  $('stock').textContent=`盤子上還有：魚 ${4-count('fish')} 條、禮物 ${2-count('gift')} 個`;
+  $('wAV').textContent=cfg.wA+'°';$('wBV').textContent=cfg.wB+'°';
+  const parts=cfg.slot.map((v,i)=>v?i+1:null).filter(Boolean);
+  $('read0').innerHTML=`格數總和：<b>${parts.length?parts.join('＋')+'＝'+sum:'0（沒有魚）'}</b>${level==='j'?'　（水平需要 6）':''}`;
+  $('read1').textContent=`重心：支點${C.z<0?'下方':'上方'} ${Math.abs(C.z*10).toFixed(1)} mm · ${C.y>=0?'偏前':'偏後'} ${Math.abs(C.y*10).toFixed(1)} mm`;
+  $('read2').textContent=fallen?'重心在支點上方，鵜鶘會翻倒':deg<.5?'鵜鶘：水平':'鵜鶘：'+(eqT>0?'低頭 ':'抬頭 ')+(stuck?LIM+'°（算出來 '+real.toFixed(1)+'°，被小爪擋住）':deg.toFixed(1)+'°');
+  const st=$('state');st.className='state'+(fallen?' bad':stuck?' bad':deg>3?' warn':'');
+  st.textContent=fallen?'翻倒':stuck?(eqT>0?'低頭到底：小爪頂住支柱':'抬頭到底：小爪頂住支柱'):deg>3?'傾斜後平衡':'穩定平衡';
+  const tips=level==='e'?
+    (sum===6?'太棒了！號碼加起來是 6，鵜鶘水平了。換別的組合，也能加到 6 嗎？':sum<6?'鵜鶘在抬頭：魚要放得更前面，或再多放一條。':'鵜鶘在低頭：魚太前面了，往後移一格試試。'):
+    (sum===6?'力矩平衡：Σ（重量×距離）前後抵消，重心落在支點正下方。':`總和 ${sum}，和 6 差 ${Math.abs(sum-6)} 格。也可以只轉翅膀把它調回水平：翅膀往${sum<6?'下垂（角度變大）':'後抬（角度變小）'}。大翅膀比較重，轉它效果比較大。`);
+  $('tip').textContent=tips;
+}
+function changed(){updateEq();renderUI();if(step===7&&stepP>=1){swingOn=true;swingA=.06;swingT=0}}
+function setStep(n){step=clamp(n,0,STEPS.length-1);stepT=0;stepP=0;swingOn=false;swingA=0;selGroup=null;updateEq();applyPreset();renderUI()}
+$('prev').onclick=()=>setStep(step-1);$('next').onclick=()=>setStep(step+1);
+$('again').onclick=()=>{stepT=0;stepP=0;swingOn=false;swingA=0;if(step===6)cur=0};
+$('lvE').onclick=()=>{level='e';try{localStorage.setItem('bb-level','e')}catch(e){};renderUI()};
+$('lvJ').onclick=()=>{level='j';try{localStorage.setItem('bb-level','j')}catch(e){};renderUI()};
+$('push').onclick=()=>{if(stepP>=1){swingOn=true;swingA=.22;swingT=0}};
+$('com').onclick=()=>{showCom=!showCom;renderUI()};
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight')setStep(step+1);if(e.key==='ArrowLeft')setStep(step-1)});
+
+/* ---------- 相機操作（r128 無 OrbitControls，自寫） ---------- */
+const cv=renderer.domElement,ptrs=new Map();let pinch=0;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptrs.size===2){const a=[...ptrs.values()];pinch=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}});
+cv.addEventListener('pointermove',e=>{
+  const p=ptrs.get(e.pointerId);if(!p)return;
+  if(ptrs.size===1){const dx=e.clientX-p.x,dy=e.clientY-p.y;want.yaw-=dx*.006;cam.yaw-=dx*.006;want.pitch=clamp(want.pitch+dy*.005,-.35,1.45);cam.pitch=clamp(cam.pitch+dy*.005,-.35,1.45)}
+  p.x=e.clientX;p.y=e.clientY;
+  if(ptrs.size===2){const a=[...ptrs.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch>0)want.dist=clamp(want.dist*pinch/d,6,120);pinch=d}});
+const up=e=>{ptrs.delete(e.pointerId);pinch=0};
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('wheel',e=>{e.preventDefault();want.dist=clamp(want.dist*(1+e.deltaY*.001),6,120)},{passive:false});
+function resize(){const w=stageEl.clientWidth,h=stageEl.clientHeight;if(!w||!h)return;aspect=w/h;renderer.setSize(w,h,false);camera.aspect=aspect;camera.updateProjectionMatrix();applyPreset()}
+new ResizeObserver(resize).observe(stageEl);
+
+/* ---------- 重心教具 ---------- */
+const rig=new THREE.Group();rig.matrixAutoUpdate=false;scene.add(rig);
+const comDot=new THREE.Mesh(new THREE.SphereGeometry(.32,16,12),new THREE.MeshBasicMaterial({color:0xcf3348,depthTest:false}));comDot.renderOrder=9;rig.add(comDot);
+const pvDot=new THREE.Mesh(new THREE.SphereGeometry(.24,16,12),new THREE.MeshBasicMaterial({color:0x2c8a57,depthTest:false}));pvDot.renderOrder=9;rig.add(pvDot);
+const plumb=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new V3(0,TOP,0),new V3(0,TOP-4,0)]),new THREE.LineDashedMaterial({color:0x2c8a57,dashSize:.25,gapSize:.15,depthTest:false}));
+plumb.computeLineDistances();plumb.renderOrder=9;scene.add(plumb);
+
+/* ---------- 影格 ---------- */
+const HOVER=new V3(0,4,0),STAND=new V3(0,0,0),BENCH=new V3(0,TOP+4.5,0),PIVOT=new V3(0,TOP,0);
+const tmpM=new M4(),tA=new V3(),tB=new V3(),qA=new Q(),qB=new Q(),sc=new V3(),pos=new V3(),qq=new Q(),wp=new V3(),nq=new M4();
+let lastDt=0;
+function frames(){
+  if(step<3)FR.pillar.compose(HOVER,QI,one);
+  else if(step===3){pos.lerpVectors(HOVER,STAND,ease(clamp(stepP/.8)));FR.pillar.compose(pos,QI,one)}
+  else FR.pillar.compose(STAND,QI,one);
+  // 鳥：步驟 6 在手上（支柱正上方）組翅膀，步驟 7 放下去
+  let ang=0;
+  if(step<6){FR.bird.compose(BENCH,QI,one);cur=0}
+  else{
+    const k=step===6?ease(clamp(stepP/.45)):1;pos.lerpVectors(BENCH,PIVOT,k);
+    if(k<1)cur=0;else cur+=(eqT-cur)*Math.min(1,lastDt*2.2);
+    const dec=Math.exp(-.6*swingT);
+    ang=clamp(cur+(swingOn?swingA*dec*Math.sin(3.4*swingT):0),-LIM*D,LIM*D);
+    qq.setFromAxisAngle(new V3(1,0,0),ang);FR.bird.compose(pos,qq,one);
+  }
+  // 翅膀依實驗角度擺
+  WINGS.forEach(p=>p.local.copy(M(p.wx,SH[1],SH[0],QV)).multiply(new M4().makeRotationZ((180+(p.big?cfg.wA:cfg.wB))*D)).multiply(new M4().makeTranslation(-p.off,0,0)));
+  // H 魚：放進格子的跟著鳥，其他站在盤子上（x=-9 一排）
+  const used=step>=7?cfg.slot:[null,null,null,null], at=[-1,-1,-1,-1,-1,-1], pool={fish:[0,1,2,3],gift:[4,5]};
+  used.forEach((k,s)=>{if(k&&pool[k].length)at[pool[k].shift()]=s});
+  ITEMS.forEach((it,i)=>{it.slot=at[i];
+    if(at[i]>=0)FR.h[i].multiplyMatrices(FR.bird,M(0,G.ZC,NY[at[i]]));
+    else FR.h[i].compose(new V3(-9,2.0-(G.ZF-G.ZC),-9+i*4.6),QI,one)});
+}
+function target(p){
+  if(!p.local){p.flat.decompose(p.tp,p.tq,sc);return [step>0,false]}
+  tmpM.multiplyMatrices(frameOf(p),p.local);
+  let dim=false;
+  if(step<p.stage){p.flat.decompose(p.tp,p.tq,sc);dim=step>0}
+  else if(step>p.stage){tmpM.decompose(p.tp,p.tq,sc)}
+  else{
+    const k=ease(clamp((stepP-p.delay)/.55));
+    p.flat.decompose(tA,qA,sc);tmpM.decompose(tB,qB,sc);
+    if(p.app){   // 兩段式：先飛到入口，再沿孔或槽滑入
+      const q=clamp((stepP-p.delay)/p.win);
+      if(q<.6){const k1=ease(q/.6);tB.add(p.app);p.tp.lerpVectors(tA,tB,k1);p.tp.y+=Math.sin(Math.PI*k1)*3;p.tq.copy(qA).slerp(qB,k1)}
+      else{p.tp.copy(tB).addScaledVector(p.app,1-ease((q-.6)/.4));p.tq.copy(qB)}
+    }else{p.tp.lerpVectors(tA,tB,k);p.tp.y+=Math.sin(Math.PI*k)*4;p.tq.copy(qA).slerp(qB,k)}
+  }
+  return [dim,p.hlAt.includes(step)&&step>0];
+}
+const clock=new THREE.Clock(),pvTag=$('tagPv'),cmTag=$('tagCm');
+function project(v,el,dx){wp.copy(v).project(camera);const vis=wp.z<1&&Math.abs(wp.x)<1.05&&Math.abs(wp.y)<1.05;el.hidden=!vis;if(vis){el.style.left=((wp.x+1)/2*stageEl.clientWidth)+'px';el.style.top=((1-wp.y)/2*stageEl.clientHeight)+'px'}}
+function animate(){
+  requestAnimationFrame(animate);
+  let dt=clock.getDelta();if(dt>.1)dt=.1;   // 每幀只取一次
+  lastDt=dt;const now=clock.elapsedTime;
+  stepT+=dt;stepP=Math.min(stepT/DUR,1);
+  if(swingOn)swingT+=dt;
+  if(step===6&&stepP>=.45&&!swingOn){swingOn=true;swingA=.1;swingT=0}
+  if(selGroup){selT+=dt;if(selT>2.2)selGroup=null}
+  frames();
+  const kp=1-Math.exp(-dt*16);
+  for(const p of parts){
+    const [dim,active]=target(p);
+    p.mesh.position.lerp(p.tp,kp);p.mesh.quaternion.slerp(p.tq,kp);
+    p.op+=((dim?.32:1)-p.op)*Math.min(1,dt*8);
+    p.face.opacity=p.edge.opacity=p.op;p.face.depthWrite=p.edge.depthWrite=p.op>.95;
+    let g=active?.05+.04*Math.sin(now*4):0;
+    if(selGroup===p.group)g=.45*(.5+.5*Math.sin(selT*9));
+    p.glow+=(g-p.glow)*Math.min(1,dt*10);p.face.emissiveIntensity=p.edge.emissiveIntensity=p.glow;
+  }
+  // 重心教具＋格子號碼
+  rig.matrix.copy(FR.bird);comDot.position.set(0,C.z,C.y);
+  const comOn=showCom&&step===7&&stepP>=.5;
+  rig.visible=plumb.visible=comOn;
+  if(comOn){project(PIVOT,pvTag);comDot.getWorldPosition(tA);project(tA,cmTag)}else pvTag.hidden=cmTag.hidden=true;
+  for(let i=0;i<4;i++){const e=$('nt'+i);if(step===7&&stepP>.3){tA.set(0,G.RIM_Z+.25,NY[i]).applyMatrix4(FR.bird);project(tA,e)}else e.hidden=true}
+  const kc=1-Math.exp(-dt*3.5);
+  cam.t.lerp(want.t,kc);cam.yaw+=(want.yaw-cam.yaw)*kc;cam.pitch+=(want.pitch-cam.pitch)*kc;cam.dist+=(want.dist-cam.dist)*kc;
+  camera.position.set(cam.t.x+cam.dist*Math.sin(cam.yaw)*Math.cos(cam.pitch),cam.t.y+cam.dist*Math.sin(cam.pitch),cam.t.z+cam.dist*Math.cos(cam.yaw)*Math.cos(cam.pitch));
+  camera.lookAt(cam.t);
+  renderer.render(scene,camera);
+}
+updateEq();resize();applyPreset();renderUI();animate();
+window.__sim={setStep,cfg,changed,com,get eqT(){return eqT},get C(){return C},get step(){return step},get stuck(){return stuck},parts,ITEMS};
+})();
+</script>
+<script id="home-link-js">(function(){var ok=/\.html?$/i.test(location.pathname)||/github\.io$/i.test(location.hostname);if(ok)document.querySelectorAll(".home-link").forEach(function(e){e.hidden=false})})();</script>

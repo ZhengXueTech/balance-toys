@@ -12,6 +12,7 @@
 | 老鷹抓獵物（第二款 V2_3，換獵物重心實驗） | `eagle/assembly3.html` |
 | 老鷹 AR 平衡挑戰＋與作品合照（繞著我飛，可選第一款或抓魚的老鷹；`?eagle=prey` 直接開抓魚款；🎨 掃描彩繪身體貼到 3D 老鷹，範例照片在 `eagle/ar_samples/`） | `eagle/ar.html` |
 | 鵜鶘平衡實驗室 | `pelican/lab.html` |
+| 鵜鶘第二款：組裝＋餵魚實驗 | `pelican/lab2.html` |
 | 太空站平衡實驗室 | `iss/lab.html` |
 
 每個頁面都是單一 HTML 檔，Three.js 從 cdnjs 載入；AR 頁的手指辨識（MediaPipe Hands）從 jsDelivr 載入，在使用者裝置上執行，畫面不會上傳。
@@ -24,7 +25,7 @@
 
 ## 雷切檔
 
-- `pelican/files/`：鵜鶘 v1.1（SVG、DXF、A3 紙板原型）
+- `pelican/files/`：鵜鶘 v1.1、鵜鶘第二款 v1.0（SVG、DXF、A3 紙板原型）
 - `iss/files/`：太空站 v7（SVG、DXF、A3 紙板原型）
 - 3 mm 夾板，插槽 2.7 mm（切縫約 0.3 mm）；紅線切割、藍線雕刻。
 
