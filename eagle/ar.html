@@ -217,7 +217,7 @@ function walk(n){if(n.nodeType===3){const v=L(n.nodeValue);if(v!==n.nodeValue)n.
 function bar(){const c=document.querySelector('#intro .card');if(!c)return;const d=document.createElement('div');d.className='langbar';d.setAttribute('role','group');d.setAttribute('aria-label','Language');
  [['zh','中文'],['en','English'],['ja','日本語']].forEach(([k,n])=>{const b=document.createElement('button');b.type='button';b.textContent=n;b.setAttribute('aria-pressed',k===lg);
   b.onclick=()=>{try{localStorage.setItem('bb-ar-lang',k)}catch(e){};const u=new URL(location.href);u.searchParams.set('lang',k);location.replace(u.toString())};d.appendChild(b)});c.insertBefore(d,c.firstChild)}
-function go(){bar();if(!T)return;document.title=L(document.title);walk(document.body);
+function go(){bar();if(!T)return;document.querySelectorAll('.home-link').forEach(h=>{h.href='assembly.html?lang='+lg;h.textContent=lg==='ja'?'← 組み立てガイド':'← Assembly guide';h.setAttribute('aria-label',lg==='ja'?'組み立てガイドへ戻る':'Back to the assembly guide')});document.title=L(document.title);walk(document.body);
  new MutationObserver(ms=>ms.forEach(m=>{if(m.type==='characterData')walk(m.target);else if(m.type==='attributes')walk(m.target);else m.addedNodes.forEach(walk)}))
   .observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','alt']})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();

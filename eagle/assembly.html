@@ -84,6 +84,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .state.warn{background:#c98a1b}.state.bad{background:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<style id="intl-nav-css">/* INTL_NAV */body.intl .home-link,body.intl #kind{display:none!important}#arTop{display:none;margin-top:8px;text-align:center;text-decoration:none}body.intl #arTop{display:block}</style>
 <style id="home-link-css">.home-link{display:inline-flex;align-items:center;gap:4px;font:600 13px "Noto Sans TC",system-ui,sans-serif;color:inherit;opacity:.72;text-decoration:none;margin:0 0 6px;padding:4px 10px 4px 8px;border:1px solid currentColor;border-radius:999px;pointer-events:auto;width:max-content}.home-link:hover,.home-link:focus-visible{opacity:1}.home-link[hidden]{display:none!important}</style>
 
 <div id="app">
@@ -104,6 +105,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
         <button id="lvE" aria-pressed="true">國小版</button><button id="lvJ" aria-pressed="false">國中版</button><button id="lvI" aria-pressed="false">國際版 International</button>
       </div>
       <div class="seg" id="langSeg" role="group" aria-label="Language" hidden><button id="lgEn" aria-pressed="true">EN</button><button id="lgJa" aria-pressed="false">日本語</button></div>
+      <a class="btn pri" id="arTop" href="ar.html?lang=en">AR</a>
     </header>
     <div id="dots" aria-label="步驟"></div>
     <section class="card">
@@ -363,6 +365,7 @@ function renderUI(){
   $('prev').disabled=step===0;$('next').disabled=step===STEPS.length-1;
   $('lvE').setAttribute('aria-pressed',level==='e');$('lvJ').setAttribute('aria-pressed',level==='j');$('lvI').setAttribute('aria-pressed',level==='i');applyStatic();
   $('com').setAttribute('aria-pressed',showCom);
+  {const I=level==='i',t=$('arTop');document.body.classList.toggle('intl',I);t.href='ar.html?lang='+lang;t.textContent=lang==='ja'?'▶ AR チャレンジ：指先にワシをとまらせよう':'▶ AR challenge: balance the eagle on your finger'}
   {const a=$('toAR'),I=level==='i';a.style.display=step===STEPS.length-1?'block':'none';a.href='ar.html?lang='+(I?lang:'zh');a.textContent=I?(lang==='ja'?'次へ：指先にワシをとまらせる AR チャレンジ →':'Next: AR challenge — balance the eagle on your finger →'):'下一步：AR 平衡挑戰（老鷹停在指尖）→'}
 }
 function setStep(n){step=clamp(n,0,STEPS.length-1);stepT=0;stepP=0;swingOn=false;swingA=0;selGroup=null;applyPreset();renderUI()}
