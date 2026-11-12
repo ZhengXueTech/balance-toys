@@ -101,8 +101,9 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <div class="sub">第二版 組裝圖（外形與重心依原始雷切檔）</div>
       <nav class="kind" id="kind" aria-label="款式" hidden><a href="assembly.html" aria-current="page">第一款</a><a href="assembly2.html">第二款</a><a href="assembly3.html">抓獵物</a></nav>
       <div class="seg" role="group" aria-label="說明程度">
-        <button id="lvE" aria-pressed="true">國小版</button><button id="lvJ" aria-pressed="false">國中版</button>
+        <button id="lvE" aria-pressed="true">國小版</button><button id="lvJ" aria-pressed="false">國中版</button><button id="lvI" aria-pressed="false">國際版 International</button>
       </div>
+      <div class="seg" id="langSeg" role="group" aria-label="Language" hidden><button id="lgEn" aria-pressed="true">EN</button><button id="lgJa" aria-pressed="false">日本語</button></div>
     </header>
     <div id="dots" aria-label="步驟"></div>
     <section class="card">
@@ -208,14 +209,16 @@ function add(group,geom,frame,local,flat,stage,delay,tint,hlAt){
 }
 const Y=.45;
 add('discL',ext(discShape('discL'),40),'stand',M(0,.15,0,QFLAT),onSheet('discL',Y),1,0,0xd6b584,[1,3]);
-add('discS',ext(discShape('discS'),40),'stand',M(0,.45,0,QFLAT),onSheet('discS',Y),1,.3,0xdcbd8f,[1,3]);
+const DISC_S=add('discS',ext(discShape('discS'),40),'stand',M(0,.45,0,QFLAT),onSheet('discS',Y),1,.3,0xdcbd8f,[1,3]);
+/* MOTION_FIX：沿卡榫方向移入 */ DISC_S.app=new V3(0,2.5,0);DISC_S.win=.7;
 // B（上端開槽）先就位；A（下端開槽）從正上方往下套入。[FIX 6] A 頂端是完整 6 mm 寬，和頭片同一平面（前後向），鳥喙凹處就卡在它上面
 add('pillar',ext(pillarShape('B')),'pillar',M(0,0,0),onSheet('pilB',Y),2,0,0xd8b688,[2,3,7]);
 const PIL_A=add('pillar',ext(pillarShape('A')),'pillar',M(0,0,0,qY(-Math.PI/2)),onSheet('pilA',Y),2,.3,0xd4b080,[2,3,7]);
 PIL_A.app=new V3(0,7,0);PIL_A.win=.7;
 // 鳥的座標原點＝支點（鳥喙尖）。身體平放、頭片直立，兩者十字對插
 const BODY=add('body',ext(bodyShape(),12),'bird',M(0,GEO.BODY_Y,0,QFLAT),onSheet('body',Y),4,0,0xdcbe90,[4,7]);
-add('head',ext(headShape(),12),'bird',M(0,0,0,qY(-Math.PI/2)),onSheet('head',Y),4,.38,0xcfae7e,[4,7]);
+const HEAD=add('head',ext(headShape(),12),'bird',M(0,0,0,qY(-Math.PI/2)),onSheet('head',Y),4,.3,0xcfae7e,[4,7]);
+HEAD.app=new V3(1,0,0).applyQuaternion(qY(-Math.PI/2)).multiplyScalar(3.2);HEAD.win=.7;   // 頭片橫槽開口在後緣：從鳥喙那一側往後滑入
 // 板上的箭頭形小片：本組裝圖未使用，只留在板上
 const arrowP=new THREE.Mesh(ext(fromGeo('arrow'),8),new THREE.MeshStandardMaterial({color:0xe6d8bc,roughness:.85,transparent:true}));
 onSheet('arrow',Y).decompose(arrowP.position,arrowP.quaternion,new V3());arrowP.receiveShadow=true;scene.add(arrowP);
@@ -239,6 +242,7 @@ function updateWing(){
     const W=WING[side>0?'R':'L'], n=side>0?cfg.nR:cfg.nL, [hx,hz]=holeOf(side);
     W.fe.forEach((p,i)=>{p.local.compose(new V3(hx,FY[i],hz),yawFlat(phiOf(side,i)),one);p.mesh.visible=i<n});
     W.pin.local.compose(new V3(hx,PIN_Y,hz),QI,one);W.was.local.compose(new V3(hx,WAS_Y,hz),QFLAT,one);
+    W.fe.forEach(p=>{if(!p.app){p.app=new V3(0,-1.6,0);p.win=.6}});if(!W.pin.app){W.pin.app=new V3(0,2.6,0);W.pin.win=.6}if(!W.was.app){W.was.app=new V3(0,-1.8,0);W.was.win=.6}
   }
 }
 const GP=GEO.parts;
@@ -317,7 +321,23 @@ const STEPS=[
 /* ---------- 狀態 ---------- */
 let step=0, stepT=0, stepP=0, level='e', swingA=0, swingT=0, swingOn=false, selGroup=null, selT=0;
 const DUR=2.4;
-try{const s=localStorage.getItem('bb-level');if(s==='e'||s==='j')level=s}catch(e){}
+try{const s=localStorage.getItem('bb-level');if(s==='e'||s==='j'||s==='i')level=s}catch(e){}
+/* I18N_INTL：國際版（English／日本語），依手機語言自動選擇 */
+const I18N={"en": {"steps": [["Meet the parts", "Find these parts on the board and count them. The dark edges are laser burn marks, not dirt."], ["Stack the base", "Put the large disc at the bottom and the small disc on top. Line up the cross-shaped holes."], ["Cross the two posts", "The two posts are different: one has a slot at the top (split head), the other at the bottom (split feet). Hold the one split at the top, then slide the other one down onto it to make a cross."], ["Insert the posts into the base", "Line up the feet of the cross with the cross-shaped hole and press all the way down."], ["Attach the eagle's head", "The head has a horizontal slot at the back; the neck of the body has a vertical slot. Slide the two slots into each other. Keep the head upright, beak facing forward."], ["Add the feather weights", "Turn the eagle over. Under the small hole of each wing, stack two feathers with their holes lined up."], ["Lock with the pins", "Push the T-shaped pin down through the holes, then press the square-hole washer on firmly from below. Do the same on the other side."], ["Balance it on the post!", "Rest the tip of the beak on top of the post and gently let go. If the eagle tips forward or back, turn the feathers until it stops level. What happens when you turn them forward or back?"]], "groups": {"body": "Body", "head": "Head", "feather": "Feather weights", "pillar": "Posts", "discL": "Large disc", "discS": "Small disc", "pin": "T-pins", "washer": "Square-hole washers"}, "ui": {"eyebrow": "Laser-cut wood · 3 mm board · 14 parts", "h1": "Balance Bird", "sub": "Assembly guide", "hint": "Drag to rotate · scroll or pinch to zoom · ← → change steps", "labh": "Experiment: change the feathers", "rows": ["Left feathers", "Right feathers", "Left angle", "Right angle", "Pin hole"], "tip": "Slide right = feathers turn forward (outward); slide left = backward (inward). Original design: feathers outward, about 17° forward — the eagle is level.", "reset": "Reset to original", "prev": "Back", "again": "Replay", "next": "Next", "push": "Give it a push", "com": "Show center of gravity", "note": "Tap a part name to find it in the 3D view. The small arrow-shaped piece on the board is not used.", "step": "Step ", "pv": "Pivot", "cm": "Center of gravity", "home": "← Balance Toys home", "kind": ["Model 1", "Model 2", "With prey"]}, "rd": {"stable": "Stable balance", "tilt": "Tilted but balanced", "fall": "Falls off", "r1": "Center of gravity: {d} mm below the beak · {fb} {z} mm · {lr} {x} mm", "fwd": "forward", "back": "back", "left": "left", "right": "right", "fallen": "Too far off balance — the bird falls off the post", "body": "Body: {pa} {a} · {roll}", "down": "nose down", "up": "nose up", "level": "level side to side", "lt": "tilts left", "rt": "tilts right", "f": "fwd ", "b": "back ", "orig": "Original", "out": "out ", "in": "in "}}, "ja": {"steps": [["パーツを確認しよう", "板からこれらのパーツを見つけて、数を確認しよう。ふちが黒いのはレーザーで焼けたあとで、汚れではありません。"], ["台座を重ねる", "大きい円板を下に、小さい円板を上に重ねます。真ん中の十字の穴をそろえよう。"], ["支柱を十字に組む", "2本の支柱は形がちがいます。上にみぞがある支柱（頭が分かれている）を持ち、下にみぞがある支柱（足が分かれている）を上から差しこんで、十字にします。"], ["支柱を台座に差す", "十字の支柱の足を円板の十字の穴に合わせて、奥まで押しこもう。"], ["ワシの頭を付ける", "頭の後ろには横のみぞ、胴体の首には縦のみぞがあります。2つのみぞを組み合わせよう。頭はまっすぐ立て、くちばしを前に向けます。"], ["羽のおもりを重ねる", "ワシを裏返します。それぞれの翼の小さな穴の下に羽を2枚重ね、穴をそろえよう。"], ["ピンで固定する", "T字のピンを上から穴に通し、下から四角い穴のワッシャーをしっかり押しこみます。反対側も同じようにします。"], ["支柱にのせてバランス！", "くちばしの先を支柱のてっぺんにのせ、そっと手をはなします。ワシが前や後ろにかたむいたら、水平になるまで羽を回そう。羽を前や後ろに回すと、ワシはどうかたむくかな？"]], "groups": {"body": "胴体", "head": "頭", "feather": "羽のおもり", "pillar": "支柱", "discL": "大きい円板", "discS": "小さい円板", "pin": "Tピン", "washer": "四角穴ワッシャー"}, "ui": {"eyebrow": "レーザー加工の木製キット・3mm板・14パーツ", "h1": "バランスバード", "sub": "組み立てガイド", "hint": "ドラッグで回転・ホイールやピンチで拡大・← → でステップ切替", "labh": "実験：羽を変えてみよう", "rows": ["左の羽", "右の羽", "左の角度", "右の角度", "ピン穴の位置"], "tip": "右へ動かす＝羽が前（外）へ、左へ動かす＝後ろ（内）へ回ります。元の設計：羽を外向き・約17°前にすると、ワシは水平になります。", "reset": "元の設計に戻す", "prev": "もどる", "again": "もう一度", "next": "つぎへ", "push": "軽く押す", "com": "重心を表示", "note": "パーツ名をタップすると、3D画面で場所がわかります。板の小さな矢印形のパーツは使いません。", "step": "ステップ ", "pv": "支点", "cm": "重心", "home": "← バランストイ ホーム", "kind": ["モデル1", "モデル2", "獲物つき"]}, "rd": {"stable": "安定したつり合い", "tilt": "傾いてつり合い", "fall": "落ちる", "r1": "重心：くちばしの下 {d} mm・{fb} {z} mm・{lr} {x} mm", "fwd": "前", "back": "後ろ", "left": "左", "right": "右", "fallen": "重心がずれすぎて、支柱から落ちます", "body": "本体：{pa} {a}・{roll}", "down": "下向き", "up": "上向き", "level": "左右は水平", "lt": "左に傾く", "rt": "右に傾く", "f": "前 ", "b": "後 ", "orig": "元の位置", "out": "外へ ", "in": "内へ "}}};
+let lang=(navigator.language||'').toLowerCase().startsWith('ja')?'ja':'en';
+try{const q=new URLSearchParams(location.search).get('lang');if(q==='intl'||q==='en'||q==='ja'){level='i';if(q!=='intl')lang=q}else{const m=localStorage.getItem('bb-lang');if(m==='en'||m==='ja')lang=m}}catch(e){}
+const LL=()=>level==='i'?I18N[lang]:null;
+const ORIG={};
+function applyStatic(){const L=LL();
+ const set=(sel,key,val)=>{const el=typeof sel==='string'?document.querySelector(sel):sel;if(!el)return;if(!(key in ORIG))ORIG[key]=el.textContent;el.textContent=L?val:ORIG[key]};
+ const u=L?L.ui:{};
+ set('.eyebrow','eyebrow',u.eyebrow);set('#panel h1','h1',u.h1);set('#panel .sub','sub',u.sub);set('.hint','hint',u.hint);set('.lab-h','labh',u.labh);
+ document.querySelectorAll('#lab .row>span').forEach((el,i)=>set(el,'row'+i,u.rows&&u.rows[i]));
+ set('#lab .tip','tip',u.tip);set('#reset','reset',u.reset);set('#prev','prev',u.prev);set('#again','again',u.again);set('#next','next',u.next);
+ set('#push','push',u.push);set('#com','com',u.com);set('#panel .note','note',u.note);set('#tagPv','pv',u.pv);set('#tagCm','cm',u.cm);set('.home-link','home',u.home);
+ document.querySelectorAll('#kind a').forEach((el,i)=>set(el,'kind'+i,u.kind&&u.kind[i]));
+ document.documentElement.lang=L?lang:'zh-Hant';
+ const ls=document.getElementById('langSeg');if(ls){ls.hidden=!L;document.getElementById('lgEn').setAttribute('aria-pressed',lang==='en');document.getElementById('lgJa').setAttribute('aria-pressed',lang==='ja')}}
 
 const cam={t:new V3(),yaw:0,pitch:.9,dist:60}, want={t:new V3(),yaw:0,pitch:1,dist:50};
 function applyPreset(){const c=STEPS[step].cam;want.t.set(c[0],c[1],c[2]);want.yaw=c[3];want.pitch=c[4];want.dist=c[5]*(aspect<.9?1.45:1)}
@@ -331,15 +351,16 @@ STEPS.forEach((s,i)=>{const b=document.createElement('button');b.id='dot'+i;b.te
 function renderUI(){
   const s=STEPS[step];
   [...dots.children].forEach((b,i)=>{b.classList.toggle('on',i===step);b.classList.toggle('done',i<step)});
-  $('num').textContent='步驟 '+(step+1)+' / '+STEPS.length;
-  $('ttl').textContent=s.t;
-  $('txt').textContent=level==='e'?s.e:s.j;$('txt').className=level==='e'?'elem':'';
+  const L=LL();
+  $('num').textContent=(L?L.ui.step:'步驟 ')+(step+1)+' / '+STEPS.length;
+  $('ttl').textContent=L?L.steps[step][0]:s.t;
+  $('txt').textContent=L?L.steps[step][1]:(level==='e'?s.e:s.j);$('txt').className=level==='j'?'':'elem';
   const ch=$('chips');ch.textContent='';
-  s.g.forEach(g=>{const b=document.createElement('button');b.textContent=GROUPS[g][0];const n=document.createElement('b');n.textContent='×'+GROUPS[g][1];b.appendChild(n);b.onclick=()=>{selGroup=g;selT=0};ch.appendChild(b)});
+  s.g.forEach(g=>{const b=document.createElement('button');b.textContent=L?L.groups[g]:GROUPS[g][0];const n=document.createElement('b');n.textContent='×'+GROUPS[g][1];b.appendChild(n);b.onclick=()=>{selGroup=g;selT=0};ch.appendChild(b)});
   $('extra').hidden=$('lab').hidden=step!==STEPS.length-1;
   document.querySelectorAll('.mini').forEach(g=>{const n=g.dataset.side==='L'?cfg.nL:cfg.nR;[...g.children].forEach((b,i)=>b.setAttribute('aria-pressed',i===n))});
   $('prev').disabled=step===0;$('next').disabled=step===STEPS.length-1;
-  $('lvE').setAttribute('aria-pressed',level==='e');$('lvJ').setAttribute('aria-pressed',level==='j');
+  $('lvE').setAttribute('aria-pressed',level==='e');$('lvJ').setAttribute('aria-pressed',level==='j');$('lvI').setAttribute('aria-pressed',level==='i');applyStatic();
   $('com').setAttribute('aria-pressed',showCom);
 }
 function setStep(n){step=clamp(n,0,STEPS.length-1);stepT=0;stepP=0;swingOn=false;swingA=0;selGroup=null;applyPreset();renderUI()}
@@ -347,6 +368,9 @@ $('prev').onclick=()=>setStep(step-1);$('next').onclick=()=>setStep(step+1);
 $('again').onclick=()=>{stepT=0;stepP=0;swingOn=false;swingA=0};
 $('lvE').onclick=()=>{level='e';try{localStorage.setItem('bb-level','e')}catch(e){};renderUI()};
 $('lvJ').onclick=()=>{level='j';try{localStorage.setItem('bb-level','j')}catch(e){};renderUI()};
+$('lvI').onclick=()=>{level='i';try{localStorage.setItem('bb-level','i')}catch(e){};renderUI();readout()};
+$('lgEn').onclick=()=>{lang='en';try{localStorage.setItem('bb-lang','en')}catch(e){};renderUI();readout()};
+$('lgJa').onclick=()=>{lang='ja';try{localStorage.setItem('bb-lang','ja')}catch(e){};renderUI();readout()};
 $('push').onclick=()=>{if(stepP>=1){swingOn=true;swingA=.3;swingT=0}};
 $('com').onclick=()=>{showCom=!showCom;renderUI()};
 function readout(){
@@ -360,6 +384,12 @@ function readout(){
   $('angLV').textContent=sg(cfg.angL);$('angRV').textContent=sg(cfg.angR);
   $('holeV').textContent=cfg.s===0?'原位':(cfg.s>0?'往外 ':'往內 ')+Math.abs(cfg.s*10).toFixed(0)+'mm';
   arrowP.visible=sheet.visible;
+  const L=LL();if(L){const R=L.rd,f1=v=>Math.abs(v*10).toFixed(1);
+    $('read1').textContent=R.r1.replace('{d}',(-COM.y*10).toFixed(1)).replace('{fb}',COM.z>=0?R.fwd:R.back).replace('{z}',f1(COM.z)).replace('{lr}',COM.x>=0?R.right:R.left).replace('{x}',f1(COM.x));
+    $('read2').textContent=fallen?R.fallen:R.body.replace('{pa}',eqTA>=0?R.down:R.up).replace('{a}',deg(eqTA)).replace('{roll}',Math.abs(eqTB)<.002?R.level:(eqTB>=0?R.lt:R.rt)+' '+deg(eqTB));
+    st.textContent=fallen?R.fall:big>4?R.tilt:R.stable;
+    const sg2=v=>(v>0?R.f:v<0?R.b:'')+Math.abs(v)+'°';$('angLV').textContent=sg2(cfg.angL);$('angRV').textContent=sg2(cfg.angR);
+    $('holeV').textContent=cfg.s===0?R.orig:(cfg.s>0?R.out:R.in)+Math.abs(cfg.s*10).toFixed(0)+'mm'}
 }
 function rebuildBody(){BODY.mesh.geometry.dispose();BODY.mesh.geometry=ext(bodyShape(cfg.s),12)}
 function changed(){updateWing();updateEq();renderUI();if(stepP>=1){swingOn=true;swingA=.08;swingT=0}}
@@ -396,7 +426,8 @@ function frames(){
   // 鳥：在工作檯組裝，步驟8移到支柱頂端並擺盪
   if(step<7)FR.bird.compose(BENCH,QI,one);
   else{
-    const k=ease(clamp(stepP/.75));pos.lerpVectors(BENCH,TOP,k);pos.y+=Math.sin(Math.PI*k)*4;
+    const lift=GEO.TOP+3-BENCH.y, k=clamp(stepP/.75), k1=ease(clamp(k/.3)), k2=ease(clamp((k-.3)/.45)), k3=ease(clamp((k-.75)/.25));
+    pos.set(BENCH.x+(TOP.x-BENCH.x)*k2, BENCH.y+lift*k1-(lift-(TOP.y-BENCH.y))*k3, BENCH.z+(TOP.z-BENCH.z)*k2);   // 升高 → 平移到支柱正上方 → 垂直放下
     const dec=Math.exp(-.55*swingT), r=Math.min(1,lastDt*2.5);
     eqA+=(eqTA-eqA)*r;eqB+=(eqTB-eqB)*r;
     eul.set(eqA*k+swingA*dec*Math.sin(3.1*swingT),0,eqB*k+swingA*.55*dec*Math.sin(4.0*swingT+.8));
@@ -413,7 +444,7 @@ function target(p){
     p.flat.decompose(tA,qA,sc);tmpM.decompose(tB,qB,sc);
     if(p.app){   // 兩段式：先飛到正上方，再沿槽滑入
       const q=clamp((stepP-p.delay)/p.win);
-      if(q<.6){const k1=ease(q/.6);tB.add(p.app);p.tp.lerpVectors(tA,tB,k1);p.tp.y+=Math.sin(Math.PI*k1)*3;p.tq.copy(qA).slerp(qB,k1)}
+      if(q<.6){const k1=ease(q/.6);tB.add(p.app);p.tp.lerpVectors(tA,tB,k1);p.tp.y+=Math.sin(Math.PI*k1)*(p.app.y<0?0:3);p.tq.copy(qA).slerp(qB,k1)}
       else{p.tp.copy(tB).addScaledVector(p.app,1-ease((q-.6)/.4));p.tq.copy(qB)}
     }else{p.tp.lerpVectors(tA,tB,k);p.tp.y+=Math.sin(Math.PI*k)*4;p.tq.copy(qA).slerp(qB,k)}
   }
