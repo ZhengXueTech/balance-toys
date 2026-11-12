@@ -213,7 +213,7 @@ function add(group,gname,frame,local,flatName,stage,delay,tint,hlAt,hi){
 const frameOf=p=>p.frame==='h'?FR.h[p.hi]:FR[p.frame];
 // 底座＋支柱（和第一款相同）
 add('discL','discL','stand',M(0,.15,0,QFLAT),'discL',1,0,0xd6b584,[1,3]);
-add('discS','discS','stand',M(0,.45,0,QFLAT),'discS',1,.3,0xdcbd8f,[1,3]);
+const DISC_S=add('discS','discS','stand',M(0,.45,0,QFLAT),'discS',1,.3,0xdcbd8f,[1,3]);DISC_S.app=new V3(0,2.5,0);DISC_S.win=.7;   /* MOTION_FIX */
 add('post','postB','pillar',M(0,0,0,QV),'postB',2,0,0xd8b688,[2,3,6]);
 const PIL_A=add('post','postA','pillar',M(0,0,0),'postA',2,.3,0xd4b080,[2,3,6]);PIL_A.app=new V3(0,7,0);PIL_A.win=.7;
 // 鵜鶘本體
@@ -224,7 +224,7 @@ function engrave(p,lines){const v=[];lines.forEach(l=>{for(let i=0;i<l.length-1;
   p.lm=new THREE.LineBasicMaterial({color:0x6b4423,transparent:true});p.mesh.add(new THREE.LineSegments(g,p.lm))}
 engrave(MAIN,G.marks);
 const WINGS=[['wingB','wingBL',-.3,.1],['wingB','wingBR',.3,.17],['wingA','wingAL',-.6,.24],['wingA','wingAR',.6,.31]].map(([g,n,x,d])=>{
-  const p=add(g,g,'bird',new M4(),n,5,d,g==='wingA'?0xc9a674:0xd2b183,[5]);p.wx=x;p.big=g==='wingA';p.off=p.big?G.WAo:G.WBo;engrave(p,[p.big?G.wptrA:G.wptrB]);return p});
+  const p=add(g,g,'bird',new M4(),n,5,d,g==='wingA'?0xc9a674:0xd2b183,[5]);p.wx=x;p.big=g==='wingA';p.app=new V3(Math.sign(x)*(p.big?3.2:2.4),0,0);p.win=.5;p.off=p.big?G.WAo:G.WBo;engrave(p,[p.big?G.wptrA:G.wptrB]);return p});
 // 插銷頭在 -x 側，穿過 5 層板，另一端壓上墊片；另一組留在板上當備用
 const PINQ=new Q().setFromRotationMatrix(new M4().makeBasis(new V3(0,0,1),new V3(-1,0,0),new V3(0,-1,0)));
 const PIN=add('pin','pin','bird',M(1.2,SH[1],SH[0],PINQ),'pinL',5,.38,0xd0ad7c,[5]);PIN.app=new V3(-3,0,0);PIN.win=.55;
@@ -236,9 +236,10 @@ for(let i=0;i<6;i++){
   const kind=i<4?'fish':'gift', n=kind+(i<4?i:i-4), d=.06*i, tint=kind==='fish'?0x8fc0e6:0xee9aa6;
   const zf=G.ZF-G.ZC;
   ITEMS.push({kind,parts:[
-    add(kind,kind,'h',M(-G.FISH_X,zf,0,QV),n+'L',4,d,tint,[4,7],i),
-    add(kind,kind,'h',M(G.FISH_X,zf,0,QV),n+'R',4,d+.03,tint,[4,7],i),
-    add('bar','bar','h',M(0,0,0),'bar'+i,4,d+.06,0xd8b688,[4,7],i)]});
+    add(kind,kind,'h',M(-G.FISH_X,zf,0,QV),n+'L',4,d+.04,tint,[4,7],i),
+    add(kind,kind,'h',M(G.FISH_X,zf,0,QV),n+'R',4,d+.07,tint,[4,7],i),
+    add('bar','bar','h',M(0,0,0),'bar'+i,4,d,0xd8b688,[4,7],i)]});
+  ITEMS[i].parts[0].app=new V3(-1.6,0,0);ITEMS[i].parts[1].app=new V3(1.6,0,0);ITEMS[i].parts[0].win=ITEMS[i].parts[1].win=.5;
 }
 
 /* ---------- 物理：面積＝質量（3 mm 同一塊板） ---------- */
@@ -429,7 +430,7 @@ function target(p){
     p.flat.decompose(tA,qA,sc);tmpM.decompose(tB,qB,sc);
     if(p.app){   // 兩段式：先飛到入口，再沿孔或槽滑入
       const q=clamp((stepP-p.delay)/p.win);
-      if(q<.6){const k1=ease(q/.6);tB.add(p.app);p.tp.lerpVectors(tA,tB,k1);p.tp.y+=Math.sin(Math.PI*k1)*3;p.tq.copy(qA).slerp(qB,k1)}
+      if(q<.6){const k1=ease(q/.6);tB.add(p.app);p.tp.lerpVectors(tA,tB,k1);p.tp.y+=Math.sin(Math.PI*k1)*(p.app.y<0?0:3);p.tq.copy(qA).slerp(qB,k1)}
       else{p.tp.copy(tB).addScaledVector(p.app,1-ease((q-.6)/.4));p.tq.copy(qB)}
     }else{p.tp.lerpVectors(tA,tB,k);p.tp.y+=Math.sin(Math.PI*k)*4;p.tq.copy(qA).slerp(qB,k)}
   }

@@ -209,17 +209,19 @@ function add(group,geom,frame,local,flat,stage,delay,tint,hlAt){
 }
 const Y=.45;
 add('discL',ext(discShape('discL'),40),'stand',M(0,.15,0,QFLAT),onSheet('discL',Y),1,0,0xd6b584,[1,3]);
-add('discS',ext(discShape('discS'),40),'stand',M(0,.45,0,QFLAT),onSheet('discS',Y),1,.3,0xdcbd8f,[1,3]);
+const DISC_S=add('discS',ext(discShape('discS'),40),'stand',M(0,.45,0,QFLAT),onSheet('discS',Y),1,.3,0xdcbd8f,[1,3]);
+/* MOTION_FIX：沿卡榫方向移入 */ DISC_S.app=new V3(0,2.5,0);DISC_S.win=.7;
 // B（上端開槽）先就位；A（下端開槽）從正上方往下套入。[FIX 6] A 頂端是完整 6 mm 寬，和頭片同一平面（前後向），鳥喙凹處就卡在它上面
 add('pillar',ext(pillarShape('B')),'pillar',M(0,0,0),onSheet('pilB',Y),2,0,0xd8b688,[2,3,7]);
 const PIL_A=add('pillar',ext(pillarShape('A')),'pillar',M(0,0,0,qY(-Math.PI/2)),onSheet('pilA',Y),2,.3,0xd4b080,[2,3,7]);
 PIL_A.app=new V3(0,7,0);PIL_A.win=.7;
 // 鳥的座標原點＝支點（鳥喙尖）。身體平放、頭片直立，兩者十字對插
 const BODY=add('body',ext(bodyShape(),12),'bird',M(0,GEO.BODY_Y,0,QFLAT),onSheet('body',Y),4,0,0xdcbe90,[4,7]);
-add('head',ext(headShape(),12),'bird',M(0,0,0,qY(-Math.PI/2)),onSheet('head',Y),4,.38,0xcfae7e,[4,7]);
+const HEAD=add('head',ext(headShape(),12),'bird',M(0,0,0,qY(-Math.PI/2)),onSheet('head',Y),4,.2,0xcfae7e,[4,7]);
+HEAD.app=new V3(1,0,0).applyQuaternion(qY(-Math.PI/2)).multiplyScalar(3.2);HEAD.win=.6;   // 頭片橫槽開口朝後：從鳥喙那一側往後滑入
 // [FIX 11] 第二款：爪子片下緣缺口插進頭片下方「龍骨」尾端的斜槽（槽底對槽底），爪子片和頭片互相垂直
 // [FIX 15] V2_3 掛鉤版：獵物片（翻轉的爪子＋獵物）用方孔套在腳底橫指上，可前後自由擺動 → 用 hang 座標框，永遠保持鉛直。四種都在板上，只有選到的會掛上去
-const PREY={};['fish','snake','mouse','ball'].forEach((k,i)=>{PREY[k]=add('catch',ext(fromGeo('c_'+k),24),'hang',M(0,-GEO.HANG_DY,0),onSheet('c_'+k,Y),4,.42,[0xcaa676,0xb8a06a,0xc79a6e,0xd8c9a8][i],[4,7]);PREY[k].prey=k});
+const PREY={};['fish','snake','mouse','ball'].forEach((k,i)=>{PREY[k]=add('catch',ext(fromGeo('c_'+k),24),'hang',M(0,-GEO.HANG_DY,0),onSheet('c_'+k,Y),4,.42,[0xcaa676,0xb8a06a,0xc79a6e,0xd8c9a8][i],[4,7]);PREY[k].prey=k;PREY[k].app=new V3(0,2.4,0);PREY[k].win=.55});   // 方孔從爪尖上方往下套
 // 板上的箭頭形小片：本組裝圖未使用，只留在板上
 const arrowP=new THREE.Mesh(ext(fromGeo('arrow'),8),new THREE.MeshStandardMaterial({color:0xe6d8bc,roughness:.85,transparent:true}));
 onSheet('arrow',Y).decompose(arrowP.position,arrowP.quaternion,new V3());arrowP.receiveShadow=true;   // V2_3 不切箭頭片，不放進場景
@@ -243,6 +245,7 @@ function updateWing(){
     const W=WING[side>0?'R':'L'], n=side>0?cfg.nR:cfg.nL, [hx,hz]=holeOf(side);
     W.fe.forEach((p,i)=>{p.local.compose(new V3(hx,FY[i],hz),yawFlat(phiOf(side,i)),one);p.mesh.visible=i<n});
     W.pin.local.compose(new V3(hx,PIN_Y,hz),QI,one);W.was.local.compose(new V3(hx,WAS_Y,hz),QFLAT,one);
+    W.fe.forEach(p=>{if(!p.app){p.app=new V3(0,-1.6,0);p.win=.6}});if(!W.pin.app){W.pin.app=new V3(0,2.6,0);W.pin.win=.6}if(!W.was.app){W.was.app=new V3(0,-1.8,0);W.was.win=.6}
   }
 }
 const GP=GEO.parts;
@@ -403,7 +406,8 @@ function frames(){
   // 鳥：在工作檯組裝，步驟8移到支柱頂端並擺盪
   if(step<7)FR.bird.compose(BENCH,QI,one);
   else{
-    const k=ease(clamp(stepP/.75));pos.lerpVectors(BENCH,TOP,k);pos.y+=Math.sin(Math.PI*k)*4;
+    const lift=GEO.TOP+3-BENCH.y, k=clamp(stepP/.75), k1=ease(clamp(k/.3)), k2=ease(clamp((k-.3)/.45)), k3=ease(clamp((k-.75)/.25));
+    pos.set(BENCH.x+(TOP.x-BENCH.x)*k2, BENCH.y+lift*k1-(lift-(TOP.y-BENCH.y))*k3, BENCH.z+(TOP.z-BENCH.z)*k2);   // 升高 → 平移 → 垂直放下
     const dec=Math.exp(-.55*swingT), r=Math.min(1,lastDt*2.5);
     eqA+=(eqTA-eqA)*r;eqB+=(eqTB-eqB)*r;
     eul.set(eqA*k+swingA*dec*Math.sin(3.1*swingT),0,eqB*k+swingA*.55*dec*Math.sin(4.0*swingT+.8));
@@ -422,7 +426,7 @@ function target(p){
     p.flat.decompose(tA,qA,sc);tmpM.decompose(tB,qB,sc);
     if(p.app){   // 兩段式：先飛到正上方，再沿槽滑入
       const q=clamp((stepP-p.delay)/p.win);
-      if(q<.6){const k1=ease(q/.6);tB.add(p.app);p.tp.lerpVectors(tA,tB,k1);p.tp.y+=Math.sin(Math.PI*k1)*3;p.tq.copy(qA).slerp(qB,k1)}
+      if(q<.6){const k1=ease(q/.6);tB.add(p.app);p.tp.lerpVectors(tA,tB,k1);p.tp.y+=Math.sin(Math.PI*k1)*(p.app.y<0?0:3);p.tq.copy(qA).slerp(qB,k1)}
       else{p.tp.copy(tB).addScaledVector(p.app,1-ease((q-.6)/.4));p.tq.copy(qB)}
     }else{p.tp.lerpVectors(tA,tB,k);p.tp.y+=Math.sin(Math.PI*k)*4;p.tq.copy(qA).slerp(qB,k)}
   }
