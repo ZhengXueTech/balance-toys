@@ -136,7 +136,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
       <button class="btn" id="again" title="重播這一步">重播</button>
       <button class="btn pri" id="next">下一步</button>
     </nav>
-    <div class="note">點零件名稱可在畫面中找到它。板上的箭頭形小片本組裝圖未使用。底座、支柱、插銷、墊片和第一款相同。</div>
+    <div class="note">點零件名稱可在畫面中找到它。板上的箭頭形小片是拆件小工具：細小的地方用箭頭尖端幫忙拆，才不會裂掉。底座、支柱、插銷、墊片和第一款相同。</div>
   </aside>
 </div>
 
@@ -287,11 +287,11 @@ const arrow=new THREE.ArrowHelper(new V3(0,-1,0),new V3(),2.2,0xcf3348,.5,.32);s
 let showCom=false;
 
 /* ---------- 步驟資料 ---------- */
-const GROUPS={body:['老鷹身體',1],head:['老鷹頭',1],talon:['爪子',1],feather:['羽毛配重片',4],pillar:['支柱',2],discL:['大圓盤',1],discS:['小圓盤',1],pin:['T形插銷',2],washer:['方孔墊片',2]};
+const GROUPS={body:['老鷹身體',1],head:['老鷹頭',1],talon:['爪子',1],feather:['羽毛配重片',4],pillar:['支柱',2],discL:['大圓盤',1],discS:['小圓盤',1],pin:['T形插銷',2],washer:['方孔墊片',2],tool:['拆件小工具',1]};   // TOOL_INTRO
 const STEPS=[
- {t:'認識零件',g:['body','head','talon','feather','pillar','discL','discS','pin','washer'],
-  e:'從木板上找出這些零件，數一數有沒有少。這一款多了一片「爪子」，頭也比較長。',
-  j:'第二款由 3mm 木板雷切而成，共 15 片（板上的排法和原始雷切檔相同，箭頭形小片不用）。底座、支柱、插銷、墊片和第一款完全相同；不同的是展翅的身體、脖子很長的頭，以及新加的爪子片。先清點零件，並注意每片上的孔與缺口。',
+ {t:'認識零件',g:['body','head','talon','feather','pillar','discL','discS','pin','washer','tool'],
+  e:'從木板上找出這些零件，數一數有沒有少。這一款多了一片「爪子」，頭也比較長。板上那片箭頭形的小片是「拆件小工具」：細小的地方用箭頭尖端幫忙拆，零件才不會裂掉。',
+  j:'第二款由 3mm 木板雷切而成，共 15 片（板上的排法和原始雷切檔相同）。箭頭形小片是「拆件小工具」，不是鳥的零件：羽毛尖端、缺口這類細小的地方，用箭頭尖端幫忙拆，零件才不會裂掉或折斷。底座、支柱、插銷、墊片和第一款完全相同；不同的是展翅的身體、脖子很長的頭，以及新加的爪子片。先清點零件，並注意每片上的孔與缺口。',
   cam:[0,0,-17,0,1.05,34]},
  {t:'疊好底座',g:['discL','discS'],
   e:'大圓盤放下面，小圓盤疊在上面，中間的十字孔要對齊。',
@@ -456,6 +456,7 @@ function animate(){
   }
   // 最後一步淡出板材，畫面接近成品照
   arrowP.material.opacity=sheet.material.opacity;arrowP.visible=sheet.visible;
+  {const g=selGroup==='tool'?.5*(.5+.5*Math.sin(selT*9)):(step===0?.12+.08*Math.sin(now*4):0);arrowP.material.emissive.setHex(0xcf3348);arrowP.material.emissiveIntensity=g}
   const so=sheet.material.opacity+((step===7?0:1)-sheet.material.opacity)*Math.min(1,dt*4);
   sheet.material.opacity=so;sheet.visible=so>.02;sheet.material.depthWrite=so>.95;
   // 重心教具
